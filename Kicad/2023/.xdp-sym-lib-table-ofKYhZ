@@ -1,0 +1,6 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "Ln_Connectors")(type "KiCad")(uri "${LORETO_SYMBOLS}/LnConnectors.kicad_sym")(options "")(descr ""))
+  (lib (name "LnDevices")(type "KiCad")(uri "${LORETO_SYMBOLS}/LnDevice.kicad_sym")(options "")(descr ""))
+  (lib (name "LnDiodiTransistors")(type "KiCad")(uri "${LORETO_SYMBOLS}/LnDiodiTransistors.kicad_sym")(options "")(descr ""))
+)
