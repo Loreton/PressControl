@@ -4,7 +4,7 @@
 //
 #include <Arduino.h>
 
-#include "Pump_Alarm.h"
+#include "main.h"
 
 
 
@@ -14,9 +14,10 @@
 void checkPumpState() {
 unsigned long elapsed;
 
-    fPUMP = !digitalRead(PUMP_STATE_PIN);  // logica inversa. PumpON->LowLevel
+    fPUMP = digitalRead(PUMP_STATE_PIN);
+
     switch(fPUMP) {
-        case ON:
+        case LOW:
             if (phase==0) {
                 int _duration=500;
                 int _frequency=500;
@@ -34,7 +35,7 @@ unsigned long elapsed;
                 printStatus();
                 // emissione BEEP
                 buzzer_ON=true;
-                lnprint(true, "Beep ON for: ", buzzer_duration, " mS\n");
+                lnprintf("Beep ON for: %d mS\n", buzzer_duration);
                 tone(BUZZER_PIN, buzzer_frequency, buzzer_duration);
 
             }

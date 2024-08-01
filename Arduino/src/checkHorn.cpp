@@ -4,7 +4,7 @@
 //
 #include <Arduino.h>
 
-#include "Pump_Alarm.h"
+#include "main.h"
 
 
 
@@ -28,7 +28,7 @@ unsigned long elapsed;
                     //              HORN_lastChangeTime = now
                     //        which is the style used in the BlinkWithoutDelay example sketch
                     //        Adding on the interval is a better way to ensure that succesive periods are identical
-                    lnprint(true, "Horn will be OFF for ", horn_interval/1000, " Sec.\n" );
+                    lnprintf("Horn will be OFF for %d Sec.\n", horn_interval/1000);
                 }
                 break;
 
@@ -36,7 +36,8 @@ unsigned long elapsed;
                 if (elapsed >= horn_interval) {
                     digitalWrite(HORN_PIN, HORN_ON);
                     HORN_lastChangeTime += horn_interval;
-                    lnprint(true, "Horn will be ON for ", horn_duration/1000, " Sec.\n" );
+                    lnprintf("Horn will be ON for %d Sec.\n", horn_duration/1000);
+                    // SerialPrintf("Horn will be ON for %d Sec.\n", horn_duration/1000 );
 
                 }
                 break;
