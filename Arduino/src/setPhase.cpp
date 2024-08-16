@@ -12,14 +12,17 @@
 // ==================================
 // -
 // ==================================
-void setPhase(int count) {
+void setPhase(int phase_number) {
 
-    phase=count;
+    phase = phase_number;
 
-    if (phase==0) noTone(BUZZER_PIN);
-    if (phase>PHASE_ALARM_THRESHOLD_NUMBER) {
+    if (phase==0) {
+        noTone(BUZZER_PIN);
+    }
+
+    if (phase > PHASE_ALARM_THRESHOLD_NUMBER) {
         fALARM=true;
-        phase=PHASE_ALARM_THRESHOLD_NUMBER;
+        phase = PHASE_ALARM_THRESHOLD_NUMBER;
     }
 
 
@@ -30,7 +33,7 @@ void setPhase(int count) {
     buzzer_volume    = 9;
 
 
-    if ((phase*PHASE_STEP_DOWN) > PHASE_INTERVAL) // controllo di salvaguardia
+    if ( (phase*PHASE_STEP_DOWN) > PHASE_INTERVAL) // controllo di salvaguardia
         phase_interval=PHASE_MIN_INTERVAL;
     else
         phase_interval = PHASE_INTERVAL - (phase*PHASE_STEP_DOWN); // ogni phase diminuiamo l'intervallo

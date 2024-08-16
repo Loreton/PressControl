@@ -49,7 +49,7 @@
     #define PHASE_STEP_DOWN         PHASE_INTERVAL/30    // step con cui deve scendere l'intervallo per ogni fase
     #define BUZZER_FREQUENCY        2000          // default: 2000 Buzzer frequency
 
-    #define PHASE_ALARM_THRESHOLD_NUMBER      10 // default:10
+    #define ALARM_THRESHOLD_NUMBER      10 // default:10
 
 
     #define LED_DURATION            2000
@@ -85,7 +85,7 @@
 
     #define _MAIN_SERIAL_PRINT
     #ifdef _MAIN_SERIAL_PRINT
-        #define lnprintf(...)                  SerialPrintf("[%-20s:%04d] ", __FILENAME__, __LINE__);SerialPrintf( __VA_ARGS__, __VA_ARGS__)
+        #define lnprintf(...)          SerialPrintf("[%-20s:%04d] ", __FILENAME__, __LINE__);SerialPrintf( __VA_ARGS__, __VA_ARGS__)
 
     #else
         #define lnprintfx(...)

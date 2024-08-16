@@ -59,7 +59,7 @@ void loop() {
     }
 
     now = millis();
-    checkPumpState();
+    checkPumpState(); // controlla lo status della pompa
     checkLed();
     checkHorn();
 

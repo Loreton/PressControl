@@ -9,7 +9,9 @@
 
 
 // ==================================
-// -
+// - Suona la sirena con tempi
+// - horn_duration: ON
+// - horn_inerval: OFF
 // ==================================
 void checkHorn() {
 static unsigned long HORN_lastChangeTime;
@@ -37,15 +39,14 @@ unsigned long elapsed;
                     digitalWrite(HORN_PIN, HORN_ON);
                     HORN_lastChangeTime += horn_interval;
                     lnprintf("Horn will be ON for %d Sec.\n", horn_duration/1000);
-                    // SerialPrintf("Horn will be ON for %d Sec.\n", horn_duration/1000 );
-
                 }
                 break;
         } // end switch
     }
     else {
-        if (hornState==HORN_ON)
+        if (hornState==HORN_ON) {
             digitalWrite(HORN_PIN, HORN_OFF);
+        }
         HORN_lastChangeTime=now; // ??? ma serve?
     }
 
