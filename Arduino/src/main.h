@@ -14,8 +14,16 @@
 //   #include "WConstants.h"
 // #endif
 
+// typedef unsigned int uint;
+// typedef unsigned long ulong;
+
+
+// valid typedef
+// int8_t   int16_t     int32_t
+// uint8_t  uint16_t    uint32_t
 
 //  ARDUINO NANO pins
+    // http://www.keywild.com/arduino/gallery/Nano_PinOut.png
     #define D00       0         // pin.30 D00 - RS232:RXD
     #define D01       1         // pin.31 D01 - RS232:TXD
 
@@ -43,13 +51,20 @@
     #define A07      A07        // pin.26 - A06         - Analog exclusive pins
     #define RESET             // pin.26 - A06         - Analog exclusive pins
 
-    #define PHASE_INTERVAL          60*1000L    // number of mseconds between Buzzer
-    #define PHASE_ALARM_INTERVAL    PHASE_INTERVAL/5
-    #define PHASE_MIN_INTERVAL      1*1000    // minimo intervallo di Buzzer
-    #define PHASE_STEP_DOWN         PHASE_INTERVAL/30    // step con cui deve scendere l'intervallo per ogni fase
-    #define BUZZER_FREQUENCY        2000          // default: 2000 Buzzer frequency
 
-    #define ALARM_THRESHOLD_NUMBER      10 // default:10
+
+
+
+    #define PHASE_ALARM_THRESHOLD_NUMBER      10 // default:10
+    #define MAX_PHASES                        6
+
+    #define PHASE_INTERVAL_l          60*1000L    // number of mSeconds between Buzzer
+    #define PHASE_ALARM_INTERVAL_l    PHASE_INTERVAL_l/5
+    #define PHASE_MIN_INTERVAL      1*1000    // minimo intervallo di Buzzer
+    #define PHASE_STEP_DOWN_l         PHASE_INTERVAL_l/30    // step con cui deve scendere l'intervallo per ogni fase
+    #define BUZZER_FREQUENCY        2000          // default: 2000 Buzzer frequency
+    #define PHASE_LENGTH_l            60000L  // mSec 60 secondi
+
 
 
     #define LED_DURATION            2000
@@ -57,20 +72,21 @@
 
 
 
-    #define PUMP_STATE_PIN              D02
-    #define PRESSCONTROL_BUTTON_PIN     D03
-    #define HORN_PIN                    D04   // NOT USED
-    #define ELETTROVALVOLA_PIN          D05   // NOT USED chiusura acqua a caduta.... da implementare
-    #define TEST_ALARM_PIN              D06   // NOT USED
-    #define BUZZER_PIN                  D12
-    #define LED_PIN                     D13  // quello incorporato
+    #define TEST_ALARM_pin              D03 // INPUT_PULLUP
+    #define PUMP_STATE_pin              D04 // INPUT_PULLUP
+    #define PRESSCONTROL_BUTTON_pin     D05 // OUTPUT
+    #define HORN_pin                    D06 // OUTPUT NOT USED
+
+    #define BUZZER_pin                  D12 // OUTPUT
+    #define LED_pin                     D13  // OUTPUT quello incorporato
+    // #define ELETTROVALVOLA_PIN          D05   // NOT USED chiusura acqua a caduta.... da implementare
 
 
 
     // enum enumState    {ON=LOW, OFF=HIGH};
     enum enum_levels {
-                    ON=HIGH,
-                    OFF=LOW,
+                    ON=LOW,
+                    OFF=HIGH,
                     HORN_ON=LOW,
                     HORN_OFF=HIGH
                 };
@@ -79,66 +95,67 @@
 
 
 
-    // Arduino non possidede __FILENAME__ ne Serial.printf()
-    #define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
-    #define SerialPrintf(fmt, ...)     _SerialPrintf(PSTR(fmt), ##__VA_ARGS__)  // definita in printFunctions()
-
-    #define _MAIN_SERIAL_PRINT
-    #ifdef _MAIN_SERIAL_PRINT
-        #define lnprintf(...)          SerialPrintf("[%-20s:%04d] ", __FILENAME__, __LINE__);SerialPrintf( __VA_ARGS__, __VA_ARGS__)
-
-    #else
-        #define lnprintfx(...)
-    #endif
 
 
-    // ignore the following macros
-    #define X_lnprintf(...)
 
-            // http://www.keywild.com/arduino/gallery/Nano_PinOut.png
-    #ifdef _I_AM_PUMP_ALARM_CPP__
 
-        int phase=0;
-        unsigned long   now, next_beep_time;
-        unsigned long   led_duration, led_interval;
+    #ifdef _I_AM_MAIN_CPP__
+        char floatBuffer[10]; // Arduino non supporta il print del float quindi bisogna convertirlo in string.... dotostr()
+
+        int current_pump_time  = 0; // sec
+        int max_pump_time  = 0; // sec
+        // long l_PHASE[MAX_PHASES];
+        int  PHASE[MAX_PHASES];
+
+
+
+        int phaseNr=0;
+        unsigned long   now;
+        // ulong next_beep_time;
+        unsigned long   led_interval;
+        unsigned long   led_duration;
         unsigned long   buzzer_duration, buzzer_frequency, buzzer_volume, buzzerOffTime;
         bool            buzzer_ON;
-        bool            fTestAlarm;
+        // bool            fTestAlarm;
         unsigned long   horn_duration, horn_interval;
         unsigned long   phase_interval, next_phase_time, phase_start_time;
 
-        bool fPrint_BEEP    = true;
-        bool fPrint_HORN    = true;
-        bool fPrint_TONE    = false;
-        bool fPrint_LED     = false;
-        bool fPrint_VERBOSE = false;
+        // bool fPrint_BEEP    = true;
+        // bool fPrint_HORN    = true;
+        // bool fPrint_TONE    = false;
+        // bool fPrint_LED     = false;
+        // bool fPrint_VERBOSE = false;
 
         byte fPUMP;         // status della pompa
         bool fALARM=false;    // siamo in allarme. La pompa è rimasta accesa oltre i tempi previsti
 
 
-
-
     #else
+        extern char floatBuffer[];
+        extern int PHASE[];
+
         extern byte fPUMP;         // status della pompa
-        extern bool fPrint_BEEP;
-        extern bool fPrint_HORN;
-        extern bool fPrint_TONE;
-        extern bool fPrint_LED;
-        extern bool fPrint_VERBOSE;
+        // extern bool fPrint_BEEP;
+        // extern bool fPrint_HORN;
+        // extern bool fPrint_TONE;
+        // extern bool fPrint_LED;
+        // extern bool fPrint_VERBOSE;
 
         extern bool fALARM;    // siamo in allarme. La pompa è rimasta accesa oltre i tempi previsti
 
 
         extern const int Buzzer;
         // extern const int blinkingLED;
+        extern int   current_pump_time;
 
-        extern int phase;
+        extern int phaseNr;
+        extern unsigned long   now;
+        extern unsigned long   led_interval;
+        extern unsigned long   led_duration;
         extern unsigned long   now, next_beep_time;
-        extern unsigned long   led_duration, led_interval;
         extern unsigned long   buzzer_duration, buzzer_frequency, buzzer_volume, buzzerOffTime;
         extern bool            buzzer_ON;
-        extern bool            fTestAlarm;
+        // extern bool            fTestAlarm;
         extern unsigned long   horn_duration, horn_interval;
         extern unsigned long   phase_interval, next_phase_time, phase_start_time;
 
@@ -163,15 +180,40 @@
 //                   10,      10,         2000,    1000,
 //             };
 
+
+
+    // Arduino non possidede __FILENAME__ ne Serial.printf()
+    #define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+    #define SerialPrintf(fmt, ...)     _SerialPrintf(PSTR(fmt), ##__VA_ARGS__)  // definita in printFunctions()
+
+    #define _MAIN_SERIAL_PRINT
+    #ifdef _MAIN_SERIAL_PRINT
+        #define lnprintf(...)          SerialPrintf("[%-20s:%04d] ", __FILENAME__, __LINE__);SerialPrintf( __VA_ARGS__, __VA_ARGS__)
+
+    #else
+        #define lnprintfx(...)
+    #endif
+
+
+    // ignore the following macros
+    #define X_lnprintf(...)
+
+
+
+
 // ----------- F U N C T I O N S  -------------------
 
     // void lnprint(const char *msg, const unsigned long value=SKIP_PRINT_VALUE, const char *s2="\n");
+
+    void displayValues(void);
     void setPhase(int);
-    void checkPumpState(void);
+    // uint getPhase(void);
+    void heckPumpState(int pump_status);
     void checkLed(void);
     void checkHorn(void);
     void PressControl_Toggle(void);
     void printStatus(void);
     void testAlarm(void);
     void _SerialPrintf(const char *fmt, ...);
+    void testPrint(void);
 #endif

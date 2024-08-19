@@ -4,41 +4,78 @@
 //
 
 #include <Arduino.h>
-#define _I_AM_PUMP_ALARM_CPP__
 
+#define _I_AM_MAIN_CPP__
 #include "main.h"
 
 
 
+//######################################################
+//# Calculate phases length (seconds) reducing each
+//# pahse by 10% baout
+//######################################################
+int calculatePhasesLength(void) {
+    float step_down=91.0/100;
+    lnprintf("----- Setup phase\n");
+    /* ---- per convertire float string
+            ref: https://forum.arduino.cc/t/float-double-and-other-any-type-with-sprintf/688692
+        dtostrf( step_down, 4, 2, floatBuffer ); // dtostrf(float_value, min_width, decimal_digits, buffer)
+        sprintf(floatBuffer, "%s", String(step_down, 5).c_str());
+        sprintf(floatBuffer, "%d.%02d", (int)step_down, (int)(step_down * 100) % 100); quella che consuma meno memoria
+    */
 
+    sprintf(floatBuffer, "%d.%02d", (int)step_down, (int)(step_down * 100) % 100); // quella che consuma meno memoria
+    lnprintf("step_down %s%%\n", floatBuffer);
 
-
-
-void setup() {
-    Serial.begin(115200);
-    delay(1000);
-    pinMode(PUMP_STATE_PIN, INPUT_PULLUP);
-    pinMode(TEST_ALARM_PIN, INPUT_PULLUP);
-
-    // You can use digitalWrite(pin, HIGH) before use pinMode(pin, OUTPUT).
-    // Per evitare problemi con risorse esterne al momento dell'accensione
-    // conviene forzare l'output a livello desiderato prima di impostarlo come output
-    digitalWrite(PRESSCONTROL_BUTTON_PIN, HIGH); pinMode(PRESSCONTROL_BUTTON_PIN, OUTPUT);
-    digitalWrite(HORN_PIN,                HIGH); pinMode(HORN_PIN               , OUTPUT);
-    digitalWrite(BUZZER_PIN,              HIGH); pinMode(BUZZER_PIN             , OUTPUT);
-    digitalWrite(LED_PIN,                 HIGH); pinMode(LED_PIN                , OUTPUT);
-
-    lnprintf("Starting...\n");
-    lnprintf("PHASE_INTERVAL               : %d\n", PHASE_INTERVAL);
-    lnprintf("PHASE_ALARM_INTERVAL         : %d\n", PHASE_ALARM_INTERVAL);
-    lnprintf("PHASE_ALARM_THRESHOLD_NUMBER : %d\n", PHASE_ALARM_THRESHOLD_NUMBER);
-    lnprintf("PHASE_MIN_INTERVAL           : %d\n", PHASE_MIN_INTERVAL);
-    lnprintf("PHASE_STEP_DOWN              : %d\n", PHASE_STEP_DOWN);
-
-    setPhase(0);
+    int ph_length=60; // vale per la prima fase
+    int total=0;
+    for (int ph=1; ph < MAX_PHASES; ph++) {
+        lnprintf("  phase_%d_len: %d seconds\n", ph, ph_length);
+        total+=ph_length;
+        ph_length=ph_length*step_down;
+        PHASE[ph] = ph_length;
+    }
+    lnprintf("total seconds: %d\n", total);
+     return total;
 }
 
 
+
+
+
+//######################################################
+//#
+//######################################################
+void setup() {
+    Serial.begin(115200);
+    delay(1000);
+
+    max_pump_time = calculatePhasesLength();
+
+    // ------ setup PINs
+    pinMode(PUMP_STATE_pin, INPUT_PULLUP);
+    pinMode(TEST_ALARM_pin, INPUT_PULLUP);
+
+    /*
+        You can use digitalWrite(pin, HIGH) before use pinMode(pin, OUTPUT)
+        per evitare problemi con risorse esterne al momento dell'accensione
+        conviene forzare l'output a livello desiderato prima di impostarlo come output
+    */
+    digitalWrite(PRESSCONTROL_BUTTON_pin, OFF); pinMode(PRESSCONTROL_BUTTON_pin, OUTPUT);
+    digitalWrite(LED_pin,                 OFF); pinMode(LED_pin                , OUTPUT);
+    digitalWrite(BUZZER_pin,              OFF); pinMode(BUZZER_pin             , OUTPUT);
+    digitalWrite(HORN_pin,           HORN_OFF); pinMode(HORN_pin               , OUTPUT);
+
+    displayValues();
+    lnprintf("Starting...\n");
+}
+
+void loop() {
+    if (digitalRead(TEST_ALARM_pin) == ON) {
+        testAlarm();
+    }
+
+}
 
 // ==================================
 // - per gestire l'overflow di millis()
@@ -52,29 +89,26 @@ void setup() {
 //          then the rollover does generally not come into play.
 // - vedi anche: https://arduino.stackexchange.com/questions/12587/how-can-i-handle-the-millis-rollover
 // ==================================
-void loop() {
-    fTestAlarm = digitalRead(TEST_ALARM_PIN);
-    if (fTestAlarm == LOW) {
-        testAlarm();
-    }
+void loopx() {
 
     now = millis();
-    checkPumpState(); // controlla lo status della pompa
-    checkLed();
-    checkHorn();
+    // checkPumpState(digitalRead(PUMP_STATE_pin)); // controlla lo status della pompa
+    // checkLed();
+    // checkHorn();
 
 
     if (buzzer_ON) {
         unsigned long elapsed = now-phase_start_time;  // elapsed: duration
         if (elapsed>=buzzer_duration) { // se stiamo suonando, portiamolo a termine
             lnprintf("Beep OFF - elapsed: %d mS\n", elapsed);
-            noTone(BUZZER_PIN);
+            noTone(BUZZER_pin);
             buzzer_ON=false;
         }
     }
 
 
-    if (fALARM)
-        PressControl_Toggle();
+    if (fALARM) {
+        // PressControl_Toggle();
+    }
 
 } // end loop()

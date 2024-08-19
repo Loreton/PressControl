@@ -29,7 +29,7 @@ unsigned long elapsed;
             if (elapsed >= led_duration) {
                 // change the state to LOW
                 ledState = OFF;
-                digitalWrite(LED_PIN, ledState);
+                digitalWrite(LED_pin, ledState);
                 // and save the time when we made the change
                 LED_LastChangeTime += led_duration;
                 // NOTE: The previous line could alternatively be
@@ -44,7 +44,7 @@ unsigned long elapsed;
             if (elapsed >= led_interval) {
                 // change the state to HIGH
                 ledState = ON;
-                digitalWrite(LED_PIN, ledState);
+                digitalWrite(LED_pin, ledState);
                 // and save the time when we made the change
                 LED_LastChangeTime += led_interval;
             }

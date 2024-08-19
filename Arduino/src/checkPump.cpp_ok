@@ -11,21 +11,19 @@
 // ==================================
 // -
 // ==================================
-void checkPumpState() {
+void checkPumpState(int pump_status) {
 unsigned long elapsed;
 
-    fPUMP = digitalRead(PUMP_STATE_PIN);
-
-    switch(fPUMP) {
-        case LOW:
+    switch(pump_status) {
+        case ON:
             if (phase==0) {
                 int _duration=500;
                 int _frequency=500;
-                for (int i=1;i<=4;i++) {
-                    tone(BUZZER_PIN, _frequency*i, _duration);
+                for (int i=1; i<=4; i++) {
+                    tone(BUZZER_pin, _frequency*i, _duration);
                     delay(_duration*1.1);
                 }
-                noTone(BUZZER_PIN);
+                noTone(BUZZER_pin);
                 setPhase(1);
             }
 
@@ -36,7 +34,7 @@ unsigned long elapsed;
                 // emissione BEEP
                 buzzer_ON=true;
                 lnprintf("Beep ON for: %d mS\n", buzzer_duration);
-                tone(BUZZER_PIN, buzzer_frequency, buzzer_duration);
+                tone(BUZZER_pin, buzzer_frequency, buzzer_duration);
 
             }
             break;
@@ -50,10 +48,10 @@ unsigned long elapsed;
                 int _duration=500;
                 int _frequency=500;
                 for (int i=3;i>0;i--) {
-                    tone(BUZZER_PIN, _frequency*i, _duration);
+                    tone(BUZZER_pin, _frequency*i, _duration);
                     delay(_duration*1.1);
                 }
-                noTone(BUZZER_PIN);
+                noTone(BUZZER_pin);
             }
             break;
     }
