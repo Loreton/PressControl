@@ -17,7 +17,7 @@ void displayValues(void) {
     // lnprintf( " PHASE_STEP_DOWN (mS):              %d\n", PHASE_STEP_DOWN_l);
     // lnprintf( " PHASE_ALARM_THRESHOLD_NUMBER:   %d\n", PHASE_ALARM_THRESHOLD_NUMBER);
     for (int i = 0; i < MAX_PHASES; ++i) {
-        lnprintf(" PHASE[%d]                    %d\n", i, PHASE[i]);
+        lnprintf(" PHASE[%d]                    %d seconds\n", i, PHASE[i]);
     }
 }
 

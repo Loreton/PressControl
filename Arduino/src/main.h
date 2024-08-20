@@ -72,11 +72,12 @@
 
 
 
-    #define TEST_ALARM_pin              D03 // INPUT_PULLUP
-    #define PUMP_STATE_pin              D04 // INPUT_PULLUP
-    #define PRESSCONTROL_BUTTON_pin     D05 // OUTPUT
-    #define HORN_pin                    D06 // OUTPUT NOT USED
+    #define PRESSCONTROL_STATE_pin      D06 // INPUT_PULLUP
+    #define PUMP_STATE_pin              D07 // INPUT_PULLUP
+    #define PRESSCONTROL_BUTTON_pin     D08 // OUTPUT
+    #define HORN_pin                    D09 // OUTPUT NOT USED
 
+    #define TEST_ALARM_pin              D11 // INPUT_PULLUP
     #define BUZZER_pin                  D12 // OUTPUT
     #define LED_pin                     D13  // OUTPUT quello incorporato
     // #define ELETTROVALVOLA_PIN          D05   // NOT USED chiusura acqua a caduta.... da implementare
@@ -101,6 +102,18 @@
 
     #ifdef _I_AM_MAIN_CPP__
         char floatBuffer[10]; // Arduino non supporta il print del float quindi bisogna convertirlo in string.... dotostr()
+        const char *BLANK_2 = {"  "};
+        const char *BLANK_4 = {"    "};
+        const char *BLANK_6 = {"      "};
+        const char *BLANK_8 = {"        "};
+
+
+        // const char *BLANK_10 = {"          "};
+        // const char *BLANK_6 = {"      "};
+        // const char *BLANK_9 = {"         "};
+        // const char *BLANK_4 = {"    "};
+        // const char *BLANK_8 = {"        "};
+        // const char *BLANK_12 = {"            "};
 
         int current_pump_time  = 0; // sec
         int max_pump_time  = 0; // sec
@@ -133,6 +146,10 @@
     #else
         extern char floatBuffer[];
         extern int PHASE[];
+        extern const char *BLANK_2;
+        extern const char *BLANK_4;
+        extern const char *BLANK_6;
+        extern const char *BLANK_8;
 
         extern byte fPUMP;         // status della pompa
         // extern bool fPrint_BEEP;

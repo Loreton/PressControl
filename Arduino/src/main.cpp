@@ -53,8 +53,9 @@ void setup() {
     max_pump_time = calculatePhasesLength();
 
     // ------ setup PINs
-    pinMode(PUMP_STATE_pin, INPUT_PULLUP);
-    pinMode(TEST_ALARM_pin, INPUT_PULLUP);
+    pinMode(PUMP_STATE_pin,         INPUT_PULLUP);
+    pinMode(TEST_ALARM_pin,         INPUT_PULLUP);
+    pinMode(PRESSCONTROL_STATE_pin, INPUT_PULLUP);
 
     /*
         You can use digitalWrite(pin, HIGH) before use pinMode(pin, OUTPUT)
