@@ -23,17 +23,15 @@ void togglePinWithDelay(uint8_t pin, uint16_t delaymS) {
 }
 
 
-// ==================================
-// - Comanda il pulsante del sOnOff il quale si attiva sul rilascio.
-// - Il comando è intermediato da un relay.
-// ==================================
-void PressControl_Toggle() {
-    lnprintf("  toggling Press-Control button\n");
-    digitalWrite(PRESSCONTROL_BUTTON_pin, ON);
-    lnprintf("      Pushed\n");
-    delay(500);
-    digitalWrite(PRESSCONTROL_BUTTON_pin, OFF);
-    lnprintf("      Released\n");
+
+//##########################################################
+//# Suona il buzzer tante volte quante il phase_number
+//##########################################################
+void buzzerAlarm(uint8_t phase_num) {
+    lnprintf("BUZZER PHASE ALARM phase: %d\n", phase_num);
+    for (uint8_t i = 0; i <= phase_num; ++i) {
+        togglePinWithDelay(BUZZER_pin, 2000);
+    }
 }
 
 

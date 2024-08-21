@@ -25,17 +25,27 @@ void displayValues(void) {
 // ==================================
 // -
 // ==================================
-uint8_t getPhase(void) {
-    // uint phase_numbers = (MAX_PUMP_TIME/PHASE_LENGTH);
+uint8_t getPhase(uint8_t pump_time) {
     uint8_t phase_number = 0;
 
+
+    lnprintf("pump_time: %d\n", pump_time);
     for (int i = MAX_PHASES; i > 0; i--) {
-        lnprintf("[%d] - phase_time: %ld - current_pump_time: %ld \n", i, PHASE[i], current_pump_time);
-        if (current_pump_time >= PHASE[i]) {
+        X_lnprintf("[%d] - phase_time: %d - current_pump_time: %d \n", i, PHASE[i], pump_time);
+        if (pump_time >= PHASE[i]) {
             phase_number = i;
             break;
         }
     }
+
+    // for (int i = 0; i > 0; i++) {
+    //     lnprintf("[%d] - phase_time: %ld - current_pump_time: %ld \n", i, PHASE[i], current_pump_time);
+    //     if (pump_time < PHASE[i]*1000) {
+    //         phase_number = i;
+    //         break;
+    //     }
+    // }
+    X_lnprintf("phase_number %d\n", phase_number);
 
     // Phases_t Phases;
     // switch (current_pump_time) {
@@ -65,7 +75,6 @@ uint8_t getPhase(void) {
     //         break;
     // }
 
-    lnprintf("phase_number %d\n", phase_number);
 
     return phase_number;
 }

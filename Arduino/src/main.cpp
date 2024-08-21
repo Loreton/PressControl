@@ -75,8 +75,37 @@ void loop() {
     if (digitalRead(TEST_ALARM_pin) == ON) {
         testAlarm();
     }
+    uint8_t pump_state = digitalRead(PUMP_STATE_pin);
 
+    if (pump_state == ON) {
+        if (last_pump_state == OFF) { // verifichiamo lo stato precedente
+            last_pump_state = ON;
+            start_pump_time = millis()/1000;
+            // buzzerStartPump()
+        }
+        pump_elapsed = millis()/1000 - start_pump_time;
+        lnprintf("pump elapsed...%d\n", pump_elapsed);
+        uint8_t phase_number = getPhase(pump_elapsed);
+        if (phase_number != last_phase_number) {
+            buzzerAlarm(phase_number);
+            last_phase_number = phase_number;
+        }
+        // checkPumpState(); // controlla lo status della pompa
+    } else {
+        if (last_pump_state == ON) { // verifichiamo lo stato precedente
+            last_pump_state = OFF;
+            last_phase_number = 0;
+            phase_number = 0;
+            // buzzerStopPump()
+        }
+        // last_pump_state = OFF;
+        // start_pump_time = millis()/1000;
+
+    }
 }
+
+
+
 
 // ==================================
 // - per gestire l'overflow di millis()
@@ -93,7 +122,6 @@ void loop() {
 void loopx() {
 
     now = millis();
-    // checkPumpState(digitalRead(PUMP_STATE_pin)); // controlla lo status della pompa
     // checkLed();
     // checkHorn();
 

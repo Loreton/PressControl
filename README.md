@@ -48,5 +48,8 @@ ref: https://www.programiz.com/online-compiler/42EHaNdSRfMUF
 
 
 
-
+    (pump == ON)  --> No
+        |
+        V
+       Yes
 

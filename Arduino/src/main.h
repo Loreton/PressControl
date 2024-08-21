@@ -107,6 +107,14 @@
         const char *BLANK_6 = {"      "};
         const char *BLANK_8 = {"        "};
 
+        uint8_t phase_number = 0;
+        uint8_t last_phase_number = 0;
+
+        uint8_t pump_state = 0;
+        uint8_t last_pump_state = 0;
+
+        uint8_t  start_pump_time  = 0; // sec
+        uint8_t  pump_elapsed  = 0; // sec
 
         // const char *BLANK_10 = {"          "};
         // const char *BLANK_6 = {"      "};
@@ -115,7 +123,6 @@
         // const char *BLANK_8 = {"        "};
         // const char *BLANK_12 = {"            "};
 
-        int current_pump_time  = 0; // sec
         int max_pump_time  = 0; // sec
         // long l_PHASE[MAX_PHASES];
         int  PHASE[MAX_PHASES];
@@ -144,12 +151,15 @@
 
 
     #else
-        extern char floatBuffer[];
-        extern int PHASE[];
         extern const char *BLANK_2;
         extern const char *BLANK_4;
         extern const char *BLANK_6;
         extern const char *BLANK_8;
+
+        extern char floatBuffer[];
+        extern int PHASE[];
+        extern uint8_t current_phase_number;
+
 
         extern byte fPUMP;         // status della pompa
         // extern bool fPrint_BEEP;
@@ -230,7 +240,12 @@
     void checkHorn(void);
     void PressControl_Toggle(void);
     void printStatus(void);
+
+    // ---- new
     void testAlarm(void);
     void _SerialPrintf(const char *fmt, ...);
     void testPrint(void);
+    uint8_t getPhase(uint8_t pump_time);
+
+
 #endif
