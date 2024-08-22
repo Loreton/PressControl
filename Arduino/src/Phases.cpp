@@ -13,7 +13,7 @@ void displayValues(void) {
     // lnprintf( " PHASE_INTERVAL (mS):       %ld\n", PHASE_INTERVAL_l);
     // lnprintf( " PHASE_MIN_INTERVAL (mS):      %d\n", PHASE_MIN_INTERVAL);
     // lnprintf( " PHASE_LENGTH:                   %d\n", PHASE_LENGTH_l);
-    lnprintf( " PHASE_ALARM_INTERVAL (mS):    %ld\n", PHASE_ALARM_INTERVAL_l);
+    // lnprintf( " PHASE_ALARM_INTERVAL (mS):    %ld\n", PHASE_ALARM_INTERVAL_l);
     // lnprintf( " PHASE_STEP_DOWN (mS):              %d\n", PHASE_STEP_DOWN_l);
     // lnprintf( " PHASE_ALARM_THRESHOLD_NUMBER:   %d\n", PHASE_ALARM_THRESHOLD_NUMBER);
     for (int i = 0; i < MAX_PHASES; ++i) {
@@ -22,14 +22,79 @@ void displayValues(void) {
 }
 
 
+//######################################################
+//# Calculate phases length (seconds) reducing each
+//# pahse by 10% baout
+//######################################################
+int initializePhases(void) {
+    float step_down=91.0/100;
+    lnprintf("----- Setup phase\n");
+    /* ---- per convertire float string
+            ref: https://forum.arduino.cc/t/float-double-and-other-any-type-with-sprintf/688692
+        dtostrf( step_down, 4, 2, floatBuffer ); // dtostrf(float_value, min_width, decimal_digits, buffer)
+        sprintf(floatBuffer, "%s", String(step_down, 5).c_str());
+        sprintf(floatBuffer, "%d.%02d", (int)step_down, (int)(step_down * 100) % 100); quella che consuma meno memoria
+    */
+
+    sprintf(floatBuffer, "%d.%02d", (int)step_down, (int)(step_down * 100) % 100); // quella che consuma meno memoria
+    lnprintf("step_down %s%%\n", floatBuffer);
+
+    int ph_length=60; // vale per la prima fase
+    int total=0;
+    for (int ph=1; ph < MAX_PHASES; ph++) {
+        lnprintf("  phase_%d_len: %d seconds\n", ph, ph_length);
+        ph_length=ph_length*step_down;
+        total+=ph_length;
+        PHASE[ph] = total;
+    }
+    lnprintf("total seconds: %d\n", total);
+    return total;
+}
+
+
+
+
+
 // ==================================
 // -
 // ==================================
-uint8_t getPhase(uint8_t pump_time) {
+uint8_t getPhase(uint8_t phase_nr, uint8_t pump_time) {
+
+    if (pump_time > PHASE[phase_nr]) {
+        phase_nr +=1;
+    }
+
+    return phase_nr;
+}
+
+
+// ==================================
+// -
+// ==================================
+uint8_t getPhase_(uint8_t pump_time) {
     uint8_t phase_number = 0;
 
+    X_lnprintf("pump_time: %d\n", pump_time);
+    for (int i = 0; i<MAX_PHASES; i++) {
+        X_lnprintf("[%d] - phase_time: %d - current_pump_time: %d \n", i, PHASE[i], pump_time);
+        if (pump_time < PHASE[i]) {
+            phase_number = i;
+            break;
+        }
+    }
 
-    lnprintf("pump_time: %d\n", pump_time);
+    // lnprintf("phase_number %d\n", phase_number);
+
+    return phase_number;
+}
+
+// ==================================
+// -
+// ==================================
+uint8_t getPhase__(uint8_t pump_time) {
+    uint8_t phase_number = 0;
+
+    X_lnprintf("pump_time: %d\n", pump_time);
     for (int i = MAX_PHASES; i > 0; i--) {
         X_lnprintf("[%d] - phase_time: %d - current_pump_time: %d \n", i, PHASE[i], pump_time);
         if (pump_time >= PHASE[i]) {
@@ -38,47 +103,14 @@ uint8_t getPhase(uint8_t pump_time) {
         }
     }
 
-    // for (int i = 0; i > 0; i++) {
-    //     lnprintf("[%d] - phase_time: %ld - current_pump_time: %ld \n", i, PHASE[i], current_pump_time);
-    //     if (pump_time < PHASE[i]*1000) {
-    //         phase_number = i;
-    //         break;
-    //     }
-    // }
     X_lnprintf("phase_number %d\n", phase_number);
-
-    // Phases_t Phases;
-    // switch (current_pump_time) {
-
-    //     case 0 ... PHASE_1:
-    //         phase_number = 0;
-    //         break;
-
-    //     case  PHASE_1+1 ... PHASE_2:
-    //         phase_number = 1;
-    //         break;
-
-    //     case  PHASE_2+1 ... PHASE_3:
-    //         phase_number = 2;
-    //         break;
-
-    //     case  PHASE_3+1 ... PHASE_4:
-    //         phase_number = 3;
-    //         break;
-
-    //     case  PHASE_4+1 ... PHASE_5:
-    //         phase_number = 4;
-    //         break;
-
-    //     default:
-    //         phase_number = 5;
-    //         break;
-    // }
-
 
     return phase_number;
 }
 
+
+
+#if 0
 // ==================================
 // -
 // ==================================
@@ -87,7 +119,7 @@ void setPhase(int phase_number) {
     int phase = phase_number;
 
     if (phase==0) {
-        noTone(BUZZER_pin);
+        noTone(PASSIVE_BUZZER_pin);
     }
 
     if (phase > PHASE_ALARM_THRESHOLD_NUMBER) {
@@ -140,4 +172,4 @@ void setPhase(int phase_number) {
     printStatus();
 }
 
-
+#endif

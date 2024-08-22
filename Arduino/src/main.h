@@ -2,11 +2,12 @@
 // updated by ...: Loreto Notarantonio
 // Date .........: 30-07-2024 12.04.08
 //
+#include <Arduino.h>
 
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <Arduino.h>
+#include "pins.h"
 
 // #if defined(ARDUINO) && ARDUINO >= 100
 //   #include "Arduino.h"
@@ -22,70 +23,32 @@
 // int8_t   int16_t     int32_t
 // uint8_t  uint16_t    uint32_t
 
-//  ARDUINO NANO pins
-    // http://www.keywild.com/arduino/gallery/Nano_PinOut.png
-    #define D00       0         // pin.30 D00 - RS232:RXD
-    #define D01       1         // pin.31 D01 - RS232:TXD
-
-    #define D02       2         // pin.32 - D02 -           -
-    #define D03       3         // pin.01 - D03 -           - PWM
-    #define D04       4         // pin.02 - D04 - I2C:SDA
-    #define D05       5         // pin.09 - D05 - I2C:SCL   - PWM
-    #define D06       6         // pin.10 - D06 -           - PWM
-    #define D07       7         // pin.11 - D07 -           -
-    #define D08       8         // pin.12 - D08 -           -
-    #define D09       9         // pin.13 - D09 -           - PWM
-    #define D10      10         // pin.14 - D10 - SPI:SS    - PWM
-    #define D11      11         // pin.15 - D11 - SPI:MOSI  - PWM
-    #define D12      12         // pin.16 - D12 - SPI:MISO  -
-    #define D13      13         // pin.17 - D13 - SCK       - R1K + LED
-
-    #define A00      A00        // pin.19 - A00-D14 - Analog or Digital
-    #define A01      A01        // pin.20 - A01-D15 - Analog or Digital
-    #define A02      A02        // pin.21 - A02-D16 - Analog or Digital
-    #define A03      A03        // pin.22 - A03-D17 - Analog or Digital
-    #define A04      A04        // pin.23 - A04-D18 - Analog or Digital
-    #define A05      A05        // pin.24 - A05-D19 - Analog or Digital
-
-    #define A06      A06        // pin.25 - A06         - Analog exclusive pins
-    #define A07      A07        // pin.26 - A06         - Analog exclusive pins
-    #define RESET             // pin.26 - A06         - Analog exclusive pins
-
-
 
 
 
     #define PHASE_ALARM_THRESHOLD_NUMBER      10 // default:10
     #define MAX_PHASES                        6
 
-    #define PHASE_INTERVAL_l          60*1000L    // number of mSeconds between Buzzer
-    #define PHASE_ALARM_INTERVAL_l    PHASE_INTERVAL_l/5
-    #define PHASE_MIN_INTERVAL      1*1000    // minimo intervallo di Buzzer
-    #define PHASE_STEP_DOWN_l         PHASE_INTERVAL_l/30    // step con cui deve scendere l'intervallo per ogni fase
-    #define BUZZER_FREQUENCY        2000          // default: 2000 Buzzer frequency
-    #define PHASE_LENGTH_l            60000L  // mSec 60 secondi
+    // #define PHASE_INTERVAL_l          60*1000L    // number of mSeconds between Buzzer
+    // #define PHASE_ALARM_INTERVAL_l    PHASE_INTERVAL_l/5
+    // #define PHASE_MIN_INTERVAL        1*1000    // minimo intervallo di Buzzer
+    // #define PHASE_STEP_DOWN_l         PHASE_INTERVAL_l/30    // step con cui deve scendere l'intervallo per ogni fase
+    // #define BUZZER_FREQUENCY          2000          // default: 2000 Buzzer frequency
+    // #define PHASE_LENGTH_l            60000L  // mSec 60 secondi
 
 
 
     #define LED_DURATION            2000
     #define LED_INTERVAL            1000
 
-
-
-    #define PRESSCONTROL_STATE_pin      D06 // INPUT_PULLUP
-    #define PUMP_STATE_pin              D07 // INPUT_PULLUP
-    #define PRESSCONTROL_BUTTON_pin     D08 // OUTPUT
-    #define HORN_pin                    D09 // OUTPUT NOT USED
-
-    #define TEST_ALARM_pin              D11 // INPUT_PULLUP
-    #define BUZZER_pin                  D12 // OUTPUT
-    #define LED_pin                     D13  // OUTPUT quello incorporato
-    // #define ELETTROVALVOLA_PIN          D05   // NOT USED chiusura acqua a caduta.... da implementare
+    #define ACTIVE_BUZZER false
 
 
 
     // enum enumState    {ON=LOW, OFF=HIGH};
     enum enum_levels {
+                    PUMP_ON=0,
+                    PUMP_OFF=1,
                     ON=LOW,
                     OFF=HIGH,
                     HORN_ON=LOW,
@@ -101,35 +64,25 @@
 
 
     #ifdef _I_AM_MAIN_CPP__
-        char floatBuffer[10]; // Arduino non supporta il print del float quindi bisogna convertirlo in string.... dotostr()
         const char *BLANK_2 = {"  "};
         const char *BLANK_4 = {"    "};
         const char *BLANK_6 = {"      "};
         const char *BLANK_8 = {"        "};
+        char floatBuffer[10]; // Arduino non supporta il print del float quindi bisogna convertirlo in string.... dotostr()
 
-        uint8_t phase_number = 0;
-        uint8_t last_phase_number = 0;
-
-        uint8_t pump_state = 0;
-        uint8_t last_pump_state = 0;
-
-        uint8_t  start_pump_time  = 0; // sec
-        uint8_t  pump_elapsed  = 0; // sec
-
-        // const char *BLANK_10 = {"          "};
-        // const char *BLANK_6 = {"      "};
-        // const char *BLANK_9 = {"         "};
-        // const char *BLANK_4 = {"    "};
-        // const char *BLANK_8 = {"        "};
-        // const char *BLANK_12 = {"            "};
-
-        int max_pump_time  = 0; // sec
-        // long l_PHASE[MAX_PHASES];
-        int  PHASE[MAX_PHASES];
+        // uint8_t     phase_number      = 0;
+        // uint8_t     last_phase_number = 0;
+        // uint8_t     pump_state        = 0;
+        // uint8_t     last_pump_state   = 0;
+        uint32_t    start_pump_time   = 0; // sec
+        uint32_t    max_pump_time     = 0; // sec
+        uint32_t    pump_elapsed      = 0; // sec
+        uint16_t    PHASE[MAX_PHASES];
+        uint8_t phaseNr=0;
 
 
 
-        int phaseNr=0;
+
         unsigned long   now;
         // ulong next_beep_time;
         unsigned long   led_interval;
@@ -156,9 +109,21 @@
         extern const char *BLANK_6;
         extern const char *BLANK_8;
 
-        extern char floatBuffer[];
-        extern int PHASE[];
-        extern uint8_t current_phase_number;
+        extern char         floatBuffer[];
+        // extern uint8_t     phase_number ;
+        // extern uint8_t     last_phase_number ;
+        // extern uint8_t     pump_state ;
+        // extern uint8_t     last_pump_state ;
+        extern uint32_t    start_pump_time ; // sec
+        extern uint32_t    max_pump_time ; // sec
+        extern uint32_t    pump_elapsed ; // sec
+        extern uint16_t    PHASE[];
+
+        extern uint8_t phaseNr;
+
+
+        // extern int PHASE[];
+        // extern uint8_t current_phase_number;
 
 
         extern byte fPUMP;         // status della pompa
@@ -175,7 +140,6 @@
         // extern const int blinkingLED;
         extern int   current_pump_time;
 
-        extern int phaseNr;
         extern unsigned long   now;
         extern unsigned long   led_interval;
         extern unsigned long   led_duration;
@@ -224,6 +188,7 @@
 
     // ignore the following macros
     #define X_lnprintf(...)
+    #define x_lnprintf(...)
 
 
 
@@ -245,7 +210,17 @@
     void testAlarm(void);
     void _SerialPrintf(const char *fmt, ...);
     void testPrint(void);
-    uint8_t getPhase(uint8_t pump_time);
+    // uint8_t getPhase(uint8_t pump_time);
+    uint8_t getPhase(uint8_t phase_nr, uint8_t pump_time);
+    void buzzerAlarm(uint8_t pin, uint8_t phase_num);
+
+
+
+    void buzzerPumpOn(uint8_t pin);
+    void buzzerPumpOff(uint8_t pin);
+
+    int initializePhases(void);
+
 
 
 #endif

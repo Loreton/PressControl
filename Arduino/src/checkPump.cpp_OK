@@ -20,10 +20,10 @@ unsigned long elapsed;
                 int _duration=500;
                 int _frequency=500;
                 for (int i=1; i<=4; i++) {
-                    tone(BUZZER_pin, _frequency*i, _duration);
+                    tone(PASSIVE_BUZZER_pin, _frequency*i, _duration);
                     delay(_duration*1.1);
                 }
-                noTone(BUZZER_pin);
+                noTone(PASSIVE_BUZZER_pin);
                 setPhase(1);
             }
 
@@ -34,7 +34,7 @@ unsigned long elapsed;
                 // emissione BEEP
                 buzzer_ON=true;
                 lnprintf("Beep ON for: %d mS\n", buzzer_duration);
-                tone(BUZZER_pin, buzzer_frequency, buzzer_duration);
+                tone(PASSIVE_BUZZER_pin, buzzer_frequency, buzzer_duration);
 
             }
             break;
@@ -48,10 +48,10 @@ unsigned long elapsed;
                 int _duration=500;
                 int _frequency=500;
                 for (int i=3;i>0;i--) {
-                    tone(BUZZER_pin, _frequency*i, _duration);
+                    tone(PASSIVE_BUZZER_pin, _frequency*i, _duration);
                     delay(_duration*1.1);
                 }
-                noTone(BUZZER_pin);
+                noTone(PASSIVE_BUZZER_pin);
             }
             break;
     }
