@@ -220,7 +220,7 @@
     void buzzerPumpOff(uint8_t pin);
 
     int initializePhases(void);
-
+    void togglePinWithDelay(uint8_t pin, uint16_t toogle_delay=100);
 
 
 #endif

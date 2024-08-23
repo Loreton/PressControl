@@ -43,6 +43,9 @@ void setup() {
     lnprintf("Starting...\n");
 }
 
+
+
+
 uint32_t seconds, last_second=0;
 bool turn_second;
 uint8_t phase_number=0;
