@@ -10,13 +10,18 @@
 
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
+    delay(1000);
+
+    /* --- set PINs
+        You can use digitalWrite(pin, HIGH) before use pinMode(pin, OUTPUT).
+        Per evitare problemi con risorse esterne al momento dell'accensione
+        conviene forzare l'output a livello desiderato prima di impostarlo come output
+    */
+
     pinMode(PUMP_STATE_PIN, INPUT_PULLUP);
     pinMode(TEST_ALARM_PIN, INPUT_PULLUP);
 
-    // You can use digitalWrite(pin, HIGH) before use pinMode(pin, OUTPUT).
-    // Per evitare problemi con risorse esterne al momento dell'accensione
-    // conviene forzare l'output a livello desiderato prima di impostarlo come output
     digitalWrite(PRESSCONTROL_BUTTON_PIN, HIGH); pinMode(PRESSCONTROL_BUTTON_PIN , OUTPUT);
     digitalWrite(HORN_PIN, HIGH);                pinMode(HORN_PIN               , OUTPUT);
     digitalWrite(BUZZER_PIN, HIGH);              pinMode(BUZZER_PIN             , OUTPUT);
