@@ -9,6 +9,7 @@
 
 //  ARDUINO NANO pins
     // http://www.keywild.com/arduino/gallery/Nano_PinOut.png
+
     #define D00       0         // pin.30 D00 - RS232:RXD
     #define D01       1         // pin.31 D01 - RS232:TXD
 
@@ -49,6 +50,7 @@
     #define LED_pin                     D13  // OUTPUT quello incorporato
     // #define ELETTROVALVOLA_PIN          D05   // NOT USED chiusura acqua a caduta.... da implementare
 
+    // #define BUZZER_PIN                 ACTIVE_BUZZER_pin // OUTPUT
 
 
 #endif

@@ -9,7 +9,8 @@
 
 
 
-#if ACTIVE_BUZZER == true
+#ifdef BUZZER_ALARM
+bool buzzer_variable = 0;
 
 //##########################################################
 //# Suona il buzzer tante volte quante il phase_number
@@ -49,6 +50,14 @@ void buzzerPumpOff(uint8_t pin) {
         togglePinWithDelay(pin, _delay);
         delay(200);
     }
+}
+
+//##########################################################
+//#  buzzer OFF
+//##########################################################
+void buzzerOff(uint8_t pin) {
+    digitalWrite(pin, OFF);
+    buzzer_ON=false;
 }
 
 

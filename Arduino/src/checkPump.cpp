@@ -11,14 +11,19 @@
 // ==================================
 // -
 // ==================================
-void checkPumpState(int pump_status) {
+void checkPumpState() {
 unsigned long elapsed;
+int _duration=500;
+int _frequency=500;
 
-    switch(pump_status) {
-        case ON:
-            if (phase==0) {
-                int _duration=500;
-                int _frequency=500;
+    uint8_t pump_state = digitalRead(PUMP_STATE_pin);  // logica inversa. PumpON->LowLevel
+    switch(pump_state) {
+        case PUMP_ON:
+            fPUMP = true;
+            if (phase_nr==0) {
+                lnprintf("Pump status: ON\n");
+                // buzzerPumpOn(PASSIVE_BUZZER_pin);
+
                 for (int i=1; i<=4; i++) {
                     tone(PASSIVE_BUZZER_pin, _frequency*i, _duration);
                     delay(_duration*1.1);
@@ -29,11 +34,11 @@ unsigned long elapsed;
 
             elapsed = now-phase_start_time;
             if (elapsed >= phase_interval)  {
-                setPhase(++phase);
+                setPhase(++phase_nr);
                 printStatus();
                 // emissione BEEP
                 buzzer_ON=true;
-                lnprintf("Beep ON for: %d mS\n", buzzer_duration);
+                lnprintf("Buzzer ON for: %d mS\n", buzzer_duration);
                 tone(PASSIVE_BUZZER_pin, buzzer_frequency, buzzer_duration);
 
             }
@@ -42,11 +47,11 @@ unsigned long elapsed;
 
         default:
             fALARM=false; // allarme rientrato
-            // buzzer_OFF=0;
-            if (phase>0) {
+            fPUMP = false;
+            if (phase_nr>0) {
+                lnprintf("Pump status: OFF\n");
                 setPhase(0);
-                int _duration=500;
-                int _frequency=500;
+                // buzzerPumpOff(PASSIVE_BUZZER_pin);
                 for (int i=3;i>0;i--) {
                     tone(PASSIVE_BUZZER_pin, _frequency*i, _duration);
                     delay(_duration*1.1);
@@ -55,6 +60,7 @@ unsigned long elapsed;
             }
             break;
     }
+    // digitalWrite(PASSIVE_BUZZER_pin, OFF); // quando uso il passive_pin con un active_buzzer
 
 }
 

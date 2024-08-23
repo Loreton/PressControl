@@ -21,7 +21,7 @@ void setup() {
     delay(1000);
 
 
-    max_pump_time = initializePhases();
+    // max_pump_time = initializePhases();
 
 
     /* ------ setup PINs
@@ -39,28 +39,66 @@ void setup() {
     digitalWrite(ACTIVE_BUZZER_pin,       OFF); pinMode(ACTIVE_BUZZER_pin      , OUTPUT);
     digitalWrite(HORN_pin,           HORN_OFF); pinMode(HORN_pin               , OUTPUT);
 
-    displayValues();
+    // displayValues();
     lnprintf("Starting...\n");
 }
 
 
 
-
-uint32_t seconds, last_second=0;
-bool turn_second;
-uint8_t phase_number=0;
-uint8_t last_phase_number=0;
-uint8_t pump_state=0;
-uint8_t last_pump_state ;
-
-
+// ==================================
+// - per gestire l'overflow di millis()
+// - bisogna operare come segue:
+//      if all your time calculations are done as:
+//      if  ((later_time - earlier_time ) >=duration ) {action}
+//      then the rollover does generally not come into play.
+//      For ease of understanding think in bytes ( 0.. 255 ), instead of unsigned longs.
+//     Example: If your old time was at 250 and now you're at 5,
+//          you calculate (5 - 250) and interpret the result as an unsigned byte, the result is 11.
+//          then the rollover does generally not come into play.
+// - vedi anche: https://arduino.stackexchange.com/questions/12587/how-can-i-handle-the-millis-rollover
+// ==================================
+unsigned long seconds, last_second;
 void loop() {
+    now = millis();
+
     while(digitalRead(TEST_ALARM_pin) == ON) {
         lnprintf("TEST_ALARM [pin: %d] detected\n", TEST_ALARM_pin);
         testAlarm();
     }
 
 
+    checkPumpState();
+    checkLed();
+    // checkHorn();
+
+    seconds = now/1000;
+    x_lnprintf("now: %ld - seconds: %ld - last_second: %ld\n", now, seconds, last_second);
+    if (seconds > last_second) {
+        last_second = seconds;
+        lnprintf("elapsed seconds: %ld\n", seconds);
+    }
+
+
+
+    if (buzzer_ON) {
+        unsigned long elapsed = now-phase_start_time;  // elapsed: duration
+        if (elapsed>=buzzer_duration) { // se stiamo suonando, portiamolo a termine
+            lnprintf("buzzer OFF - elapsed: %ld mS\n", elapsed);
+            buzzerOff(PASSIVE_BUZZER_pin);
+        }
+    }
+
+
+    if (fALARM)
+        PressControl_Toggle();
+
+
+
+
+
+
+
+    #if 0
     seconds = millis()/1000;
     if (last_second < seconds) {
         last_second = seconds;
@@ -71,7 +109,6 @@ void loop() {
     } else {
         turn_second = false;
     }
-
 
 
 
@@ -104,42 +141,8 @@ void loop() {
         // start_pump_time = millis()/1000;
 
     }
+    #endif
 }
 
 
 
-
-// ==================================
-// - per gestire l'overflow di millis()
-// - bisogna operare come segue:
-//      if all your time calculations are done as:
-//      if  ((later_time - earlier_time ) >=duration ) {action}
-//      then the rollover does generally not come into play.
-//      For ease of understanding think in bytes ( 0.. 255 ), instead of unsigned longs.
-//     Example: If your old time was at 250 and now you're at 5, 
-//          you calculate (5 - 250) and interpret the result as an unsigned byte, the result is 11.      
-//          then the rollover does generally not come into play.
-// - vedi anche: https://arduino.stackexchange.com/questions/12587/how-can-i-handle-the-millis-rollover
-// ==================================
-void loopx() {
-
-    now = millis();
-    // checkLed();
-    // checkHorn();
-
-
-    if (buzzer_ON) {
-        unsigned long elapsed = now-phase_start_time;  // elapsed: duration
-        if (elapsed>=buzzer_duration) { // se stiamo suonando, portiamolo a termine
-            lnprintf("Beep OFF - elapsed: %d mS\n", elapsed);
-            noTone(PASSIVE_BUZZER_pin);
-            buzzer_ON=false;
-        }
-    }
-
-
-    if (fALARM) {
-        // PressControl_Toggle();
-    }
-
-} // end loop()

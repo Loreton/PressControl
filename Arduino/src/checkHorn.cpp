@@ -18,13 +18,13 @@ static unsigned long HORN_lastChangeTime;
 byte hornState;
 unsigned long elapsed;
 
-    hornState=digitalRead(HORN_PIN);
+    hornState=digitalRead(HORN_pin);
     elapsed = now-HORN_lastChangeTime;
     if (fPUMP) {
         switch(hornState) {
             case HORN_ON:
                 if (elapsed >= horn_duration) {
-                    digitalWrite(HORN_PIN, HORN_OFF);
+                    digitalWrite(HORN_pin, HORN_OFF);
                     HORN_lastChangeTime += horn_duration;
                     // NOTE: The previous line could alternatively be
                     //              HORN_lastChangeTime = now
@@ -36,7 +36,7 @@ unsigned long elapsed;
 
             case HORN_OFF:
                 if (elapsed >= horn_interval) {
-                    digitalWrite(HORN_PIN, HORN_ON);
+                    digitalWrite(HORN_pin, HORN_ON);
                     HORN_lastChangeTime += horn_interval;
                     lnprintf("Horn will be ON for %d Sec.\n", horn_duration/1000);
                 }
@@ -45,7 +45,7 @@ unsigned long elapsed;
     }
     else {
         if (hornState==HORN_ON) {
-            digitalWrite(HORN_PIN, HORN_OFF);
+            digitalWrite(HORN_pin, HORN_OFF);
         }
         HORN_lastChangeTime=now; // ??? ma serve?
     }

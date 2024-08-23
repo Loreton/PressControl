@@ -8,7 +8,10 @@
 #include "main.h"
 
 
-#if ACTIVE_BUZZER == false
+#ifdef BUZZER_TONE
+bool buzzer_variable = 0;
+
+
 //##########################################################
 //# Suona il buzzer tante volte quante il phase_number
 //##########################################################
@@ -51,6 +54,16 @@ void buzzerPumpOff(uint8_t pin) {
     }
     noTone(pin);
     digitalWrite(pin, OFF);
+}
+
+
+//##########################################################
+//#  buzzer OFF
+//##########################################################
+void buzzerOff(uint8_t pin) {
+    noTone(pin);
+    digitalWrite(pin, OFF);
+    buzzer_ON=false;
 }
 
 #endif
