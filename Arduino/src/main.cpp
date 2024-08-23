@@ -6,7 +6,7 @@
 #include <Arduino.h>
 #define _I_AM_PUMP_ALARM_CPP__
 
-#include "Pump_Alarm.h"
+#include "main.h"
 
 
 void setup() {

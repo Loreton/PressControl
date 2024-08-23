@@ -4,7 +4,7 @@
 //
 #include <Arduino.h>
 
-#include "Pump_Alarm.h"
+#include "main.h"
 
 
 
@@ -25,9 +25,9 @@ void setPhase(int count) {
 
     // - defaults....
     buzzer_frequency = BUZZER_FREQUENCY;
-    led_duration = LED_DURATION;
-    led_interval = LED_INTERVAL;
-    buzzer_volume   = 9;
+    led_duration     = LED_DURATION;
+    led_interval     = LED_INTERVAL;
+    buzzer_volume    = 9;
 
 
     if ((phase*PHASE_STEP_DOWN) > PHASE_INTERVAL) // controllo di salvaguardia
