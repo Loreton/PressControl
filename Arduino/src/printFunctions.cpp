@@ -11,19 +11,19 @@
 // -
 // ==================================
 void printStatus() {
-    lnprintf("now %ld - phase # : %d\n", now, phase_nr);
+    lnprintf("now %ld - phase_nr : %d\n", now, phase_nr);
     if (fALARM) {
         lnprintf("      ALARM ON\n");
     }
     if (fPUMP) {
         lnprintf("      phase_interval  : %ld mSec\n", phase_interval);
-        lnprintf("      buzzer_frequency: %ld Hz\n",   buzzer_frequency);
-        lnprintf("      buzzer_duration : %ld mSec\n", buzzer_duration);
-        lnprintf("      horn_interval   : %ld mSec\n", horn_interval);
-        lnprintf("      horn_duration   : %ld mSec\n", horn_duration);
+        lnprintf("      remaining       : %ld mSec\n", phase_interval - phase_start_time);
     }
-
 }
+
+
+
+
 // ==================================
 // -
 // ==================================

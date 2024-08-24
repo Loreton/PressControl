@@ -26,26 +26,14 @@
 
 
 
-    #define PHASE_ALARM_THRESHOLD_NUMBER      10 // default:10
-    #define MAX_PHASES                        6
+    // #define PHASE_ALARM_THRESHOLD_NUMBER      3 // default:10
 
 
-    #define PHASE_INTERVAL          30*1000L    // number of mseconds between Buzzer
+    #define MAX_PHASES              3
+    #define PHASE_INTERVAL          15*1000L    // number of mseconds between Buzzer
     #define PHASE_ALARM_INTERVAL    PHASE_INTERVAL/5
     #define PHASE_MIN_INTERVAL      1*1000    // minimo intervallo di Buzzer
     #define PHASE_STEP_DOWN         PHASE_INTERVAL/30    // step con cui deve scendere l'intervallo per ogni fase
-    #define BUZZER_FREQUENCY        2000          // default: 2000 Buzzer frequency
-
-
-
-
-    #define LED_DURATION            2000
-    #define LED_INTERVAL            1000
-
-    #define BUZZER_TONE
-    #define BUZZER_ALARM1
-
-
 
     enum enum_levels {
                     PUMP_ON=0,
@@ -65,24 +53,13 @@
         const char *BLANK_4 = {"    "};
         const char *BLANK_6 = {"      "};
         const char *BLANK_8 = {"        "};
-
-        int phase_nr=0;
-        unsigned long   now, next_beep_time;
-        unsigned long   led_duration, led_interval;
-        unsigned long   buzzer_duration, buzzer_frequency, buzzer_volume, buzzerOffTime;
-        bool            buzzer_ON;
-        bool            fTestAlarm;
-        unsigned long   horn_duration, horn_interval;
-        unsigned long   phase_interval, next_phase_time, phase_start_time;
-
-        bool fPrint_BEEP    = true;
-        bool fPrint_HORN    = true;
-        bool fPrint_TONE    = false;
-        bool fPrint_LED     = false;
-        bool fPrint_VERBOSE = false;
-
         bool fPUMP;         // status della pompa
         bool fALARM=false;    // siamo in allarme. La pompa è rimasta accesa oltre i tempi previsti
+        int phase_nr=0;
+        unsigned long   now;
+        // unsigned long   buzzer_duration, buzzer_frequency, buzzer_volume;
+        unsigned long   phase_interval, next_phase_time, phase_start_time;
+
 
     #else
         extern const char *BLANK_2;
@@ -90,26 +67,15 @@
         extern const char *BLANK_6;
         extern const char *BLANK_8;
         extern bool fPUMP;         // status della pompa
-        extern bool fPrint_BEEP;
-        extern bool fPrint_HORN;
-        extern bool fPrint_TONE;
-        extern bool fPrint_LED;
-        extern bool fPrint_VERBOSE;
-
         extern bool fALARM;    // siamo in allarme. La pompa è rimasta accesa oltre i tempi previsti
-
-
-        extern const int Buzzer;
-
         extern int phase_nr;
-        extern unsigned long   now, next_beep_time;
-        extern unsigned long   led_duration, led_interval;
-        extern unsigned long   buzzer_duration, buzzer_frequency, buzzer_volume, buzzerOffTime;
-        extern bool            buzzer_ON;
-        extern bool            fTestAlarm;
-        extern unsigned long   horn_duration, horn_interval;
-        extern unsigned long   phase_interval, next_phase_time, phase_start_time;
 
+        extern unsigned long   now;
+        extern unsigned long   buzzer_duration; // , buzzer_frequency, buzzer_volume;
+        extern unsigned long   phase_interval, phase_start_time;
+
+        extern uint32_t alarm_time_duration;
+        extern uint32_t alarm_start_time;
 
 
     #endif
@@ -180,15 +146,19 @@
 
 
 
-    void buzzerPumpOn(uint8_t pin);
-    void buzzerPumpOff(uint8_t pin);
+    // void buzzerPumpOn(uint8_t pin);
+    // void buzzerPumpOff(uint8_t pin);
 
     // int initializePhases(void);
     void togglePinWithDelay(uint8_t pin, uint16_t toogle_delay=100);
     void checkPumpState();
-    void buzzerOff(uint8_t pin);
-    void buzzerPumpOn(uint8_t pin);
-    void buzzerPumpOff(uint8_t pin);
-
+    void buzzerOff();
+    void buzzerPumpOn();
+    void buzzerPumpOff();
+    // void checkPassiveBuzzer();
+    // void checkToneBuzzer(bool fStart=false);
+    // void pumpAlarm(bool fStart=false);
+    void pumpAlarm(uint8_t action);
+    void pumpAlarmCheck(void);
 
 #endif

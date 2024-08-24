@@ -11,9 +11,9 @@
 
 
 void testAlarm() {
-    buzzerPumpOn(ACTIVE_BUZZER_pin);
+    buzzerPumpOn();
     delay(2000);
-    buzzerPumpOff(ACTIVE_BUZZER_pin);
+    buzzerPumpOff();
     return;
     delay(2000);
 

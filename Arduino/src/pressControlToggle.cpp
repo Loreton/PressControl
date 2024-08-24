@@ -12,9 +12,9 @@
 // - Il comando è intermediato da un relay.
 // ==================================
 void PressControl_Toggle() {
+    Serial.println("pushing PressControl button");
     digitalWrite(PRESSCONTROL_BUTTON_pin, LOW);
-    Serial.println("Pushing Press-Control switch...");
-    delay(500);
+    delay(1000);
+    Serial.println("releasing PressControl button");
     digitalWrite(PRESSCONTROL_BUTTON_pin, HIGH);
-    Serial.println("... released Press-Control switch.");
 }

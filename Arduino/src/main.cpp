@@ -20,10 +20,6 @@ void setup() {
     Serial.begin(115200);
     delay(1000);
 
-
-    // max_pump_time = initializePhases();
-
-
     /* ------ setup PINs
         You can use digitalWrite(pin, HIGH) before use pinMode(pin, OUTPUT)
         per evitare problemi con risorse esterne al momento dell'accensione
@@ -57,91 +53,70 @@ void setup() {
 //          then the rollover does generally not come into play.
 // - vedi anche: https://arduino.stackexchange.com/questions/12587/how-can-i-handle-the-millis-rollover
 // ==================================
-unsigned long seconds, last_second;
 void loop() {
+    static unsigned long last_second=0;
+    static unsigned long elapsed;
+    unsigned long seconds;
     now = millis();
 
-    while(digitalRead(TEST_ALARM_pin) == ON) {
+    while (digitalRead(TEST_ALARM_pin) == ON) {
         lnprintf("TEST_ALARM [pin: %d] detected\n", TEST_ALARM_pin);
         testAlarm();
     }
 
 
-    checkPumpState();
-    checkLed();
+    // --- controllo pompa
+    if (digitalRead(PUMP_STATE_pin) == ON) { // logica inversa. PumpON->LowLevel
+
+        fPUMP = true;
+        if (phase_nr==0) {
+            lnprintf("Pump status: ON\n");
+            buzzerPumpOn();
+            setPhase(1);
+        }
+
+        elapsed = now-phase_start_time;
+        if (elapsed >= phase_interval)  {
+            setPhase(phase_nr+1);
+            pumpAlarm(ON);
+        }
+    }
+    else {
+        fALARM = false; // allarme rientrato
+        fPUMP = false;
+        if (phase_nr>0) {
+            lnprintf("Pump status: OFF\n");
+            buzzerOff();
+            setPhase(0);
+            buzzerPumpOff();
+            pumpAlarm(OFF);
+        }
+    }
+
+    pumpAlarmCheck(); // nel caso fosse attivo il buzzer di alarm
+    // checkLed();
     // checkHorn();
 
     seconds = now/1000;
     x_lnprintf("now: %ld - seconds: %ld - last_second: %ld\n", now, seconds, last_second);
     if (seconds > last_second) {
         last_second = seconds;
-        lnprintf("elapsed seconds: %ld\n", seconds);
-    }
-
-
-
-    if (buzzer_ON) {
-        unsigned long elapsed = now-phase_start_time;  // elapsed: duration
-        if (elapsed>=buzzer_duration) { // se stiamo suonando, portiamolo a termine
-            lnprintf("buzzer OFF - elapsed: %ld mS\n", elapsed);
-            buzzerOff(PASSIVE_BUZZER_pin);
+        if (fPUMP) {
+            lnprintf("phase_nr: %d - phase_interval: %ld - phase_start_time: %ld - elapsed: %ld\n", phase_nr, phase_interval, phase_start_time, now-phase_start_time);
+            lnprintf("phase_nr: %d - phase_interval: %ld - phase_start_time: %ld - remaining: %ld\n", phase_nr, phase_interval, phase_start_time, now-phase_start_time);
+        } else {
+            lnprintf("elapsed seconds: %ld\n", seconds);
         }
     }
 
 
-    if (fALARM)
-        PressControl_Toggle();
+
+    // --- forse non posso farlo altrimenti accendo e spengo,
+    //    però la prima volta dovrebbe spegnere il pressControl e l'allarme dovrebbe rientrare
+    //    da verificare
+    if (fALARM) PressControl_Toggle();
 
 
-
-
-
-
-
-    #if 0
-    seconds = millis()/1000;
-    if (last_second < seconds) {
-        last_second = seconds;
-        turn_second = true;
-        lnprintf("pump_state: %d - phase_number: %d - pump_elapsed: %d\n", pump_state, phase_number, pump_elapsed);
-        // lnprintf("last_pump_state:      %d\n", last_pump_state);
-        // lnprintf("last_phase_number:    %d\n", last_phase_number);
-    } else {
-        turn_second = false;
-    }
-
-
-
-    pump_state = digitalRead(PUMP_STATE_pin);
-    if (pump_state == PUMP_ON) {
-        if (last_pump_state == PUMP_OFF) { // verifichiamo lo stato precedente
-            last_pump_state = pump_state;
-            start_pump_time = seconds;
-            lnprintf("pump is ON\n");
-            buzzerPumpOn(ACTIVE_BUZZER_pin);
-        }
-        pump_elapsed = seconds - start_pump_time;
-
-        last_phase_number = phase_number;
-        phase_number = getPhase(phase_number, pump_elapsed);
-        if (phase_number != last_phase_number) {
-            lnprintf("phase_number has been chnged to: %d\n", phase_number);
-            buzzerAlarm(ACTIVE_BUZZER_pin, phase_number);
-            // last_phase_number = phase_number;
-        }
-    } else {
-        if (last_pump_state == ON) { // verifichiamo lo stato precedente
-            lnprintf("pump is OFF\n");
-            last_pump_state = OFF;
-            last_phase_number = 0;
-            phase_number = 0;
-            // buzzerStopPump()
-        }
-        // last_pump_state = OFF;
-        // start_pump_time = millis()/1000;
-
-    }
-    #endif
 }
 
 

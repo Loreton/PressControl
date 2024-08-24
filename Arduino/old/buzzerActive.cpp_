@@ -8,9 +8,10 @@
 #include "main.h"
 
 
-#ifdef BUZZER_TONE
-bool buzzer_variable = 0;
 
+#ifdef BUZZER_ALARM
+bool buzzer_variable = 0;
+uint8_t BUZZER_pin = ACTIVE_BUZZER_pin;
 
 //##########################################################
 //# Suona il buzzer tante volte quante il phase_number
@@ -23,48 +24,40 @@ void buzzerAlarm(uint8_t pin, uint8_t phase_num) {
 }
 
 
+
 //##########################################################
-//# Suona un passive buzzer
+//# Suona un active buzzer
 //##########################################################
 void buzzerPumpOn(uint8_t pin) {
     lnprintf("running buzzer on pin: %d\n", pin);
-    int _duration=500;
-    int _frequency=500;
-    lnprintf("%sincrease buzzer tone\n", BLANK_2);
-    for (int i=1;i<=5;i++) {
-        tone(pin, _frequency*i, _duration);
-        delay(_duration*1.1);
 
+    for (int i=1; i<=5; i++) {
+        uint16_t _delay=200;
+        togglePinWithDelay(pin, _delay);
+        delay(200);
     }
-    noTone(pin);
-    digitalWrite(pin, OFF);
 }
 
 //##########################################################
-//# Suona un passive buzzer
+//# Suona un active buzzer
 //##########################################################
 void buzzerPumpOff(uint8_t pin) {
     lnprintf("running buzzer on pin: %d\n", pin);
-    int _duration=500;
-    int _frequency=500;
-    lnprintf("%sdecrease buzzer tone\n", BLANK_2);
-    for (int i=5;i>0;i--) {
-        tone(pin, _frequency*i, _duration);
-        delay(_duration*1.1);
+    for (int i=2; i>=1; i--) {
+        uint16_t _delay=200;
+        togglePinWithDelay(pin, _delay);
+        delay(200);
     }
-    noTone(pin);
-    digitalWrite(pin, OFF);
 }
-
 
 //##########################################################
 //#  buzzer OFF
 //##########################################################
-void buzzerOff(uint8_t pin) {
-    noTone(pin);
-    digitalWrite(pin, OFF);
-    buzzer_ON=false;
-}
+// void buzzerOff(uint8_t pin) {
+//     digitalWrite(pin, OFF);
+//     tone_buzzer_ON=false;
+// }
+
 
 #endif
 

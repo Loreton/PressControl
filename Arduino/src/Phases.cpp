@@ -19,50 +19,35 @@ void setPhase(int phase_number) {
         digitalWrite(PASSIVE_BUZZER_pin, OFF);
     }
 
-    if (phase_nr > PHASE_ALARM_THRESHOLD_NUMBER) {
+    if (phase_nr > MAX_PHASES) {
         fALARM=true;
-        phase_nr = PHASE_ALARM_THRESHOLD_NUMBER;
+        pumpAlarm(ON);
+    } else if ( (phase_nr*PHASE_STEP_DOWN) > PHASE_INTERVAL) { // controllo di salvaguardia
+        phase_interval=PHASE_MIN_INTERVAL;
+    } else {
+        phase_interval = PHASE_INTERVAL - (phase_nr*PHASE_STEP_DOWN); // ogni phase diminuiamo l'intervallo
     }
 
 
     // - defaults....
-    buzzer_frequency = BUZZER_FREQUENCY;
-    led_duration     = LED_DURATION;
-    led_interval     = LED_INTERVAL;
-    buzzer_volume    = 9;
-
-
-    if ( (phase_nr*PHASE_STEP_DOWN) > PHASE_INTERVAL) // controllo di salvaguardia
-        phase_interval=PHASE_MIN_INTERVAL;
-    else
-        phase_interval = PHASE_INTERVAL - (phase_nr*PHASE_STEP_DOWN); // ogni phase diminuiamo l'intervallo
-
+    // buzzer_frequency = BUZZER_FREQUENCY;
+    // led_duration     = LED_DURATION;
+    // led_interval     = LED_INTERVAL;
+    // buzzer_volume    = 9;
 
     if (fALARM) {
         lnprintf("siamo in Alarm \n");
+        phase_nr = MAX_PHASES;
         phase_interval = PHASE_ALARM_INTERVAL;  // secondi
-
-        horn_interval = PHASE_ALARM_THRESHOLD_NUMBER*500;
-        horn_duration = horn_interval*4; // suona per il 80% del ciclo
-
-        led_duration = LED_DURATION/6;
-        led_interval = LED_INTERVAL/4;
-    }
-
-    else if (fPUMP) {
+    } else if (fPUMP) {
         lnprintf("siamo con Pump == ON\n");
-        led_duration = LED_DURATION/4;
-        led_interval = LED_INTERVAL/4;
-        horn_interval = phase_interval;
-        horn_duration = (phase_nr+2)*1000;
-
     }
 
 
-    buzzer_duration = (phase_nr+1)*1000;
-    if (buzzer_duration>phase_interval) buzzer_duration=phase_interval/3;
+    // buzzer_duration = (phase_nr+1)*1000;
+    // if (buzzer_duration>phase_interval) buzzer_duration=phase_interval/3;
 
     phase_start_time = now;
-    printStatus();
+    // printStatus();
 }
 

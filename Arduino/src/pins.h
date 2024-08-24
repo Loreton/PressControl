@@ -45,8 +45,8 @@
     #define HORN_pin                    D09 // OUTPUT NOT USED
 
     #define TEST_ALARM_pin              D10 // INPUT_PULLUP
-    #define PASSIVE_BUZZER_pin          D11 // OUTPUT
-    #define ACTIVE_BUZZER_pin           D12 // OUTPUT
+    #define ACTIVE_BUZZER_pin           D11 // OUTPUT
+    #define PASSIVE_BUZZER_pin          D12 // OUTPUT
     #define LED_pin                     D13  // OUTPUT quello incorporato
     // #define ELETTROVALVOLA_PIN          D05   // NOT USED chiusura acqua a caduta.... da implementare
 
