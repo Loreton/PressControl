@@ -38,6 +38,8 @@
     enum enum_levels {
                     PUMP_ON=0,
                     PUMP_OFF=1,
+                    BUZZ_ON=1,
+                    BUZZ_OFF=0,
                     ON=LOW,
                     OFF=HIGH,
                     HORN_ON=LOW,

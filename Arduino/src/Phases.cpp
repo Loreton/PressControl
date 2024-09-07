@@ -16,7 +16,7 @@ void setPhase(int phase_number) {
 
     if (phase_nr==0) {
         noTone(PASSIVE_BUZZER_pin);
-        digitalWrite(PASSIVE_BUZZER_pin, OFF);
+        // digitalWrite(PASSIVE_BUZZER_pin, OFF);
     }
 
     if (phase_nr > MAX_PHASES) {
