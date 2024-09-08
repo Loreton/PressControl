@@ -38,15 +38,17 @@
     #define RESET             // pin.26 - A06         - Analog exclusive pins
 
 
+    #define ACTIVE_BUZZER_pin           D02 // OUTPUT
+    #define PASSIVE_BUZZER_pin          D03 // OUTPUT - PWM
 
-    #define PRESSCONTROL_STATE_pin      D06 // INPUT_PULLUP
-    #define PUMP_STATE_pin              D07 // INPUT_PULLUP
-    #define PRESSCONTROL_BUTTON_pin     D08 // OUTPUT
-    #define HORN_pin                    D09 // OUTPUT NOT USED
+
 
     #define TEST_ALARM_pin              D10 // INPUT_PULLUP
-    #define PASSIVE_BUZZER_pin          D11 // OUTPUT - PWM
-    #define ACTIVE_BUZZER_pin           D12 // OUTPUT
+    #define PRESSCONTROL_STATE_pin      D06 // INPUT_PULLUP
+    #define PUMP_STATE_pin              D07 // INPUT_PULLUP
+    #define HORN_pin                    D09 // OUTPUT NOT USED
+
+    #define PRESSCONTROL_BUTTON_pin     D08 // OUTPUT
     #define LED_pin                     D13  // OUTPUT quello incorporato
     // #define ELETTROVALVOLA_PIN          D05   // NOT USED chiusura acqua a caduta.... da implementare
 

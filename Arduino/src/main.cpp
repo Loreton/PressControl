@@ -31,8 +31,9 @@ void setup() {
 
     digitalWrite(PRESSCONTROL_BUTTON_pin, OFF); pinMode(PRESSCONTROL_BUTTON_pin, OUTPUT);
     digitalWrite(LED_pin,                 OFF); pinMode(LED_pin                , OUTPUT);
-    digitalWrite(PASSIVE_BUZZER_pin,      OFF); pinMode(PASSIVE_BUZZER_pin     , OUTPUT);
-    digitalWrite(ACTIVE_BUZZER_pin,       OFF); pinMode(ACTIVE_BUZZER_pin      , OUTPUT);
+    // digitalWrite(PASSIVE_BUZZER_pin, BUZZ_OFF);
+    noTone(PASSIVE_BUZZER_pin);                 pinMode(PASSIVE_BUZZER_pin     , OUTPUT);
+    digitalWrite(ACTIVE_BUZZER_pin,  BUZZ_OFF); pinMode(ACTIVE_BUZZER_pin      , OUTPUT);
     digitalWrite(HORN_pin,           HORN_OFF); pinMode(HORN_pin               , OUTPUT);
 
     // displayValues();
