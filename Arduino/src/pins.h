@@ -43,12 +43,12 @@
 
 
 
-    #define TEST_ALARM_pin              D10 // INPUT_PULLUP
     #define PRESSCONTROL_STATE_pin      D06 // INPUT_PULLUP
     #define PUMP_STATE_pin              D07 // INPUT_PULLUP
     #define HORN_pin                    D09 // OUTPUT NOT USED
 
-    #define PRESSCONTROL_BUTTON_pin     D08 // OUTPUT
+    #define PRESSCONTROL_BUTTON_pin     D11  // INPUT_PULLUP
+    #define TEST_ALARM_pin              D12  // INPUT_PULLUP
     #define LED_pin                     D13  // OUTPUT quello incorporato
     // #define ELETTROVALVOLA_PIN          D05   // NOT USED chiusura acqua a caduta.... da implementare
 
