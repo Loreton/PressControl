@@ -13,8 +13,8 @@
 // ==================================
 void PressControl_Toggle() {
     Serial.println("pushing PressControl button");
-    digitalWrite(PRESSCONTROL_BUTTON_pin, LOW);
+    digitalWrite(sonoff_emergency_pin, LOW);
     delay(1000);
     Serial.println("releasing PressControl button");
-    digitalWrite(PRESSCONTROL_BUTTON_pin, HIGH);
+    digitalWrite(sonoff_emergency_pin, HIGH);
 }

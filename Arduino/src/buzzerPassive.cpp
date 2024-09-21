@@ -21,9 +21,9 @@ void pumpAlarm(uint8_t action) {
     alarm_time_duration = phase_nr * 2000;
     lnprintf("start alarm time Buzzer - duration: %ld mS\n", alarm_time_duration);
     if (action == ON) {
-        digitalWrite(ACTIVE_BUZZER_pin, BUZZ_ON);
+        digitalWrite(activeBuzzer_pin, BUZZ_ON);
     } else {
-        digitalWrite(ACTIVE_BUZZER_pin, BUZZ_OFF);
+        digitalWrite(activeBuzzer_pin, BUZZ_OFF);
     }
     fBuzzerAlarm = true;
 }
@@ -36,7 +36,7 @@ void pumpAlarmCheck() {
         unsigned long alarm_elapsed = now-alarm_start_time;  // elapsed: duration
         if (alarm_elapsed >= alarm_time_duration) { // se stiamo suonando, portiamolo a termine
             lnprintf("stop alarm time Buzzer - elapsed: %ld mS\n", alarm_elapsed);
-            digitalWrite(ACTIVE_BUZZER_pin, BUZZ_OFF);
+            digitalWrite(activeBuzzer_pin, BUZZ_OFF);
             fBuzzerAlarm = false;
         }
     }
@@ -47,32 +47,32 @@ void pumpAlarmCheck() {
 //# Suona un passive buzzer
 //##########################################################
 void buzzerPumpOn() {
-    lnprintf("%sincreasing buzzer tone on pin %d\n", BLANK_2, PASSIVE_BUZZER_pin);
+    lnprintf("%sincreasing buzzer tone on pin %d\n", BLANK_2, passiveBuzzer_pin);
     int _duration=500;
     int _frequency=BUZZER_FREQ;
     for (int i=1; i<=5; i++) {
-        tone(PASSIVE_BUZZER_pin, _frequency*i, _duration);
+        tone(passiveBuzzer_pin, _frequency*i, _duration);
         delay(_duration*1.1);
     }
-    noTone(PASSIVE_BUZZER_pin);
+    noTone(passiveBuzzer_pin);
     // delay(500);
-    // digitalWrite(PASSIVE_BUZZER_pin, OFF);
+    // digitalWrite(passiveBuzzer_pin, OFF);
 }
 
 //##########################################################
 //# Suona un passive buzzer
 //##########################################################
 void buzzerPumpOff() {
-    lnprintf("%sdecreasing buzzer tone on pin %d\n", BLANK_2, PASSIVE_BUZZER_pin);
+    lnprintf("%sdecreasing buzzer tone on pin %d\n", BLANK_2, passiveBuzzer_pin);
     int _duration=500;
     int _frequency=BUZZER_FREQ;
     for (int i=5; i>0; i--) {
-        tone(PASSIVE_BUZZER_pin, _frequency*i, _duration);
+        tone(passiveBuzzer_pin, _frequency*i, _duration);
         delay(_duration*1.1);
     }
-    noTone(PASSIVE_BUZZER_pin);
+    noTone(passiveBuzzer_pin);
     // delay(500);
-    // digitalWrite(PASSIVE_BUZZER_pin, OFF);
+    // digitalWrite(passiveBuzzer_pin, OFF);
 }
 
 
@@ -80,7 +80,7 @@ void buzzerPumpOff() {
 //#  buzzer OFF
 //##########################################################
 void buzzerOff() {
-    noTone(PASSIVE_BUZZER_pin);
-    digitalWrite(ACTIVE_BUZZER_pin, BUZZ_OFF);
+    noTone(passiveBuzzer_pin);
+    digitalWrite(activeBuzzer_pin, BUZZ_OFF);
 }
 

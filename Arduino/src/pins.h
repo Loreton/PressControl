@@ -38,21 +38,36 @@
     #define RESET             // pin.26 - A06         - Analog exclusive pins
 
 
-    #define ACTIVE_BUZZER_pin           D02 // OUTPUT
-    #define PASSIVE_BUZZER_pin          D03 // OUTPUT - PWM
+    // #define ACTIVE_BUZZER_pin           D05 // OUTPUT
+    // #define PASSIVE_BUZZER_pin          D06 // OUTPUT - PWM
 
 
 
-    #define PRESSCONTROL_STATE_pin      D06 // INPUT_PULLUP
-    #define PUMP_STATE_pin              D07 // INPUT_PULLUP
-    #define HORN_pin                    D09 // OUTPUT NOT USED
+    // #define PRESSCONTROL_STATE_pin      D10 // INPUT_PULLUP
+    // #define PUMP_STATE_pin              D09 // INPUT_PULLUP
 
-    #define PRESSCONTROL_BUTTON_pin     D11  // INPUT_PULLUP
-    #define TEST_ALARM_pin              D12  // INPUT_PULLUP
-    #define LED_pin                     D13  // OUTPUT quello incorporato
+    // #define PRESSCONTROL_BUTTON_pin     D11  // INPUT_PULLUP
+    // #define START_PCONTROL_pin          D11  // INPUT_PULLUP
+    // #define TEST_ALARM_pin              D12  // INPUT_PULLUP
     // #define ELETTROVALVOLA_PIN          D05   // NOT USED chiusura acqua a caduta.... da implementare
 
     // #define BUZZER_PIN                 ACTIVE_BUZZER_pin // OUTPUT
+
+    // #define sonoff_PControl_pin         D03  // OUTPUT
+    // #define xxx2                        D08  // not used
+
+    #define HORN_pin                    D04  // OUTPUT
+    #define arduino_PControl_pin        D05  // OUTPUT
+    #define passiveBuzzer_pin           D06  // OUTPUT
+    #define activeBuzzer_pin            D07  // OUTPUT
+    #define pumpState_pin               D08  // INPUT PULLUP
+    #define pressControlState_pin       D09  // INPUT PULLUP
+    #define sonoff_emergency_pin        D10  // OUTPUT
+    #define start_PControl_pin          D11  // INPUT PULLUP
+    #define TestAlarm_pin               D12  // INPUT PULLUP
+
+    #define LED_pin                     D13  // OUTPUT quello incorporato
+
 
 
 #endif

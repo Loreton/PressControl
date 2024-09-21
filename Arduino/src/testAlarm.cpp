@@ -22,11 +22,11 @@ void testAlarm() {
     delay(2000);
 
     lnprintf("%sturning PressControl ON\n", BLANK_2);
-    togglePinWithDelay(PRESSCONTROL_BUTTON_pin, 500); // switch press control state
+    togglePinWithDelay(sonoff_emergency_pin, 500); // switch press control state
     delay(2000);
 
     lnprintf("%sturning PressControl OFF\n", BLANK_2);
-    togglePinWithDelay(PRESSCONTROL_BUTTON_pin, 500); // switch press control state
+    togglePinWithDelay(sonoff_emergency_pin, 500); // switch press control state
     delay(2000);
     lnprintf("TEST_ALARM_PIN completed\n");
 }

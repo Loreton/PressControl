@@ -25,7 +25,6 @@
 
 
 
-
     // #define PHASE_ALARM_THRESHOLD_NUMBER      3 // default:10
 
 
@@ -36,15 +35,42 @@
     #define PHASE_STEP_DOWN         PHASE_INTERVAL/30    // step con cui deve scendere l'intervallo per ogni fase
 
     enum enum_levels {
-                    PUMP_ON=0,
-                    PUMP_OFF=1,
-                    BUZZ_ON=1,
-                    BUZZ_OFF=0,
-                    ON=LOW,
-                    OFF=HIGH,
-                    HORN_ON=LOW,
-                    HORN_OFF=HIGH
+                    ON  = LOW,
+                    OFF = HIGH,
+                    // PUMP_ON  = LOW,
+                    // PUMP_OFF = HIGH,
+                    BUZZ_ON  = HIGH,
+                    BUZZ_OFF = LOW,
+                    // LED_ON   = LOW,
+                    // LED_OFF  = HIGH,
+                    // BUTTON_ON   = LOW,
+                    // BUTTON_OFF  = HIGH,
+                    // INP_ON   = LOW,
+                    // INP_OFF  = HIGH,
+                    // HORN_ON  = LOW,
+                    // HORN_OFF = HIGH
                 };
+
+
+
+
+    typedef struct  {
+        const char   *name;
+        uint8_t pin;
+        uint8_t mode = INPUT_PULLUP;
+        bool longPress = false;
+        bool shortPress = false;
+        uint8_t pressed = LOW;
+        uint8_t released = HIGH;
+        uint8_t currState = HIGH;
+        uint8_t lastState = HIGH;
+        unsigned long lastDebounceTime = 0ul;
+        unsigned long pressedMillis = 0ul;
+        const unsigned long debounceDelay = 20ul;
+        const unsigned long longPressLimit = 400ul;
+    } bounce_button_t;
+
+
 
 
 
@@ -81,8 +107,6 @@
 
 
     #endif
-
-
 
 
 
@@ -162,5 +186,9 @@
     // void pumpAlarm(bool fStart=false);
     void pumpAlarm(uint8_t action);
     void pumpAlarmCheck(void);
+
+    bool check_pumpState_pin(uint8_t pin, uint16_t touchDelay=300);
+    bool check_pressControlState_pin(uint8_t pin);
+    void readShortLongPress(bounce_button_t *butt);
 
 #endif
