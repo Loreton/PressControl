@@ -191,55 +191,58 @@ void readShortLongPress() {
 
 
 
+// ################################################################
+// # b->pressed can be LOW or HIGH
+// # so you can check for normally closed/opened button
+// # return:
+// #      0 no action:
+// #      1 short press detected:
+// #      2 long press detected:
+// ################################################################
 
-
-void readShortLongPress(bounce_button_t *button) {
+uint8_t readShortLongPress(bounce_button_t *b, uint8_t buzzer_pin) {
     unsigned long now=millis();
+    unsigned long elapsed;
+    int state = digitalRead(b->pin);    // If the switch changed, due to noise or pressing:
+    uint8_t retValue=0;
 
-    int state = digitalRead(button->pin);    // If the switch changed, due to noise or pressing:
-    x_lnprintf("processing button on pin: %d name: %s state: %d\n", button->pin, button->name, state);
-
-    if (state != button->lastState) {
-        button->lastDebounceTime = now; // reset the debouncing timer
-        lnprintf("changed state\n");
-    }
-
-
-    if ((now - button->lastDebounceTime) > button->debounceDelay ) {
-        lnprintf("debounceDelay reached\n");
-        if (state != button->currState) {
-            lnprintf("updating state\n");
-            button->currState = state;
-
-            if (button->currState == button->pressed) {
-                button->pressed = true;
-                button->pressedMillis = now;
-            }
-            else {
-                button->released = true;
-            }
+    // button changing state
+    if (state != b->lastState) {
+        b->lastState = state;
+        if (state == b->pressed) {
+            b->pressedMillis = now; // reset pressed millis
+            b->long_notify=true;
+            b->short_notify=true;
         }
-    }
 
-
-    #if 0
-    // button was pressed, but not anymore
-    if (pressed && released) {
-        // compare current millis with the timestamp of the last press
-        if ((now - pressedMillis) >= LONG_PRESS_LIMIT ) {
-            longButtonPress = true;
-        }
         else {
-            shortButtonPress = true;
+            // button has been released, calculate elapsed time
+            elapsed = now - b->pressedMillis;
+            b->pressedMillis = now; // reset the pressed timer
+            if (elapsed > b->longButtonPress) {
+                retValue = 2;
+                lnprintf("[LONG] - button released [%d] after %lu millis\n", state, elapsed);
+            }
+            else if (elapsed > b->shortButtonPress) {
+                retValue = 1;
+                lnprintf("[SHORT] - button released [%d] after %lu millis\n", state, elapsed);
+            }
         }
-
-        // flip them back
-        pressed = false;
-        released = false;
     }
-    #endif
 
+    // serve solo per segnalare limite short/long
+    if ( (buzzer_pin) && (state == b->pressed) ) {
+        elapsed = now - b->pressedMillis;
+        if ( (elapsed > b->longButtonPress) && (b->long_notify) ){
+            toggleBuzzer(buzzer_pin, 500);
+            b->long_notify=false; // suona solo una volta
+        }
+        else if ( (elapsed > b->shortButtonPress) && (b->short_notify) ) {
+            b->short_notify=false; // suona solo una volta
+            toggleBuzzer(buzzer_pin, 100);
+            b->short_notify=false; // suona solo una volta
+        }
+    }
+    return retValue;
+} // end function
 
-
-    x_lnprintf("state: current %d last: %d\n\n", button->currState, button->lastState);
-}

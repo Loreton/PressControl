@@ -84,3 +84,12 @@ void buzzerOff() {
     digitalWrite(activeBuzzer_pin, BUZZ_OFF);
 }
 
+//##########################################################
+//#  buzzer OFF
+//##########################################################
+void toggleBuzzer(uint8_t pin, uint16_t delaymS) {
+    digitalWrite(pin, BUZZ_ON);
+    delay(delaymS);
+    digitalWrite(pin, BUZZ_OFF);
+}
+

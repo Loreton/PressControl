@@ -10,13 +10,13 @@
 // ==================================
 // -
 // ==================================
-void setPhase(int phase_number) {
+void setPhase(uint8_t phase_number) {
+    lnprintf("setting Phase to %d\n", phase_number);
 
     phase_nr = phase_number;
 
     if (phase_nr==0) {
         noTone(passiveBuzzer_pin);
-        // digitalWrite(passiveBuzzer_pin, OFF);
     }
 
     if (phase_nr > MAX_PHASES) {

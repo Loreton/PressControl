@@ -64,7 +64,7 @@
     #define pressControlState_pin       D09  // INPUT PULLUP
     #define sonoff_emergency_pin        D10  // OUTPUT
     #define start_PControl_pin          D11  // INPUT PULLUP
-    #define TestAlarm_pin               D12  // INPUT PULLUP
+    // #define TestAlarm_pin               D12  // INPUT PULLUP
 
     #define LED_pin                     D13  // OUTPUT quello incorporato
 

@@ -58,16 +58,15 @@
         const char   *name;
         uint8_t pin;
         uint8_t mode = INPUT_PULLUP;
-        bool longPress = false;
-        bool shortPress = false;
-        uint8_t pressed = LOW;
-        uint8_t released = HIGH;
-        uint8_t currState = HIGH;
+        bool longPress = false;         // true if long press detected
+        bool shortPress = false;         // true if short press detected
+        bool long_notify = true;         // flag to avoid ripetitive buzzer notification
+        bool short_notify = true;         // flag to avoid ripetitive buzzer notification
+        uint8_t pressed = LOW;          // set level for pressed
         uint8_t lastState = HIGH;
-        unsigned long lastDebounceTime = 0ul;
         unsigned long pressedMillis = 0ul;
-        const unsigned long debounceDelay = 20ul;
-        const unsigned long longPressLimit = 400ul;
+        const unsigned long shortButtonPress = 400ul;
+        const unsigned long longButtonPress = 3000ul;
     } bounce_button_t;
 
 
@@ -154,7 +153,7 @@
     // void lnprint(const char *msg, const unsigned long value=SKIP_PRINT_VALUE, const char *s2="\n");
 
     // void displayValues(void);
-    void setPhase(int);
+    void setPhase(uint8_t phase_nr);
     // uint getPhase(void);
     void heckPumpState(int pump_status);
     void checkLed(void);
@@ -187,8 +186,10 @@
     void pumpAlarm(uint8_t action);
     void pumpAlarmCheck(void);
 
-    bool check_pumpState_pin(uint8_t pin, uint16_t touchDelay=300);
-    bool check_pressControlState_pin(uint8_t pin);
-    void readShortLongPress(bounce_button_t *butt);
+    // bool check_pumpState_pin(uint8_t pin, uint16_t touchDelay=300);
+    // bool check_pressControlState_pin(uint8_t pin);
+    // void readShortLongPress(bounce_button_t *butt);
+    uint8_t readShortLongPress(bounce_button_t *b, uint8_t buzzer_pin=0); // buzzer pin per indicare la ricezione del tasto
+    void toggleBuzzer(uint8_t pin, uint16_t delaymS) ;
 
 #endif

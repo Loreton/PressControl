@@ -13,6 +13,17 @@
 
 bounce_button_t actionButton;
 
+void displayPinState() {
+    lnprintf("HORN_pin:              %d\n" , digitalRead(HORN_pin));
+    lnprintf("arduino_PControl_pin:  %d\n" , digitalRead(arduino_PControl_pin));
+    lnprintf("passiveBuzzer_pin:     %d\n" , digitalRead(passiveBuzzer_pin));
+    lnprintf("activeBuzzer_pin:      %d\n" , digitalRead(activeBuzzer_pin));
+    lnprintf("pumpState_pin:         %d\n" , digitalRead(pumpState_pin));
+    lnprintf("pressControlState_pin: %d\n" , digitalRead(pressControlState_pin));
+    lnprintf("sonoff_emergency_pin:  %d\n" , digitalRead(sonoff_emergency_pin));
+    lnprintf("start_PControl_pin:    %d\n" , digitalRead(start_PControl_pin));
+}
+
 
 //######################################################
 //#
@@ -22,7 +33,7 @@ void setup() {
     delay(1000);
 
     actionButton.name = "pressControlButton";
-    actionButton.pin = TestAlarm_pin;
+    actionButton.pin = start_PControl_pin;
     // actionButton.mode = INPUT_PULLUP;
 
     // bounce_button TestAlarm;
@@ -38,7 +49,7 @@ void setup() {
         conviene forzare l'output a livello desiderato prima di impostarlo come output
     */
     pinMode(pumpState_pin,         INPUT_PULLUP);
-    pinMode(TestAlarm_pin,         INPUT_PULLUP);
+    // pinMode(TestAlarm_pin,         INPUT_PULLUP);
     pinMode(pressControlState_pin, INPUT_PULLUP);
 
 
@@ -68,36 +79,47 @@ void setup() {
 //          then the rollover does generally not come into play.
 // - vedi anche: https://arduino.stackexchange.com/questions/12587/how-can-i-handle-the-millis-rollover
 // ==================================
-void loop() {
-    readShortLongPress(&actionButton);
-    delay(300);
-}
+#define PRESS_CONTROL_BUTTON 1
+#define TEST_BUTTON          2
 
-void loop_() {
+void loop() {
     static unsigned long last_second=0;
     static unsigned long elapsed;
     unsigned long seconds;
     now = millis();
 
+    uint8_t pressedButton = readShortLongPress(&actionButton, activeBuzzer_pin);
 
-    // if (digitalRead(pressControlState_pin) == ON) {
+    /*
+        long press -> test action
+        esegue i test per verificare che tutte le funzionalitù siano attive
+    */
+    if (pressedButton == TEST_BUTTON) {
+        displayPinState();
+        lnprintf("TEST button has been detected\n");
+        // ----  reset  all
+        if ( digitalRead(pressControlState_pin == ON) ) {
+            // digitalWrite(sonoff_emergency_pin, ON);
+            togglePinWithDelay(sonoff_emergency_pin, 500); // switch press control state
+        }
 
-    // }
+        // digitalWrite(pressControlState_pin, OFF);
+        // displayPinState();
+        // delay(5000);
+        // buzzerPumpOff();
+        // buzzerOff();
+        // setPhase(0);
+        // pumpAlarm(OFF);
+        // lnprintf("\n");
 
-    if (check_pressControlState_pin(pressControlState_pin) ) {
-        lnprintf("Press control: ON\n");
+        // start test
+        // testAlarm();
     }
 
-    while (digitalRead(TestAlarm_pin) == ON) {
-        lnprintf("TEST_ALARM [pin: %d] detected\n", TestAlarm_pin);
-        buzzerPumpOff();
-        buzzerOff();
-        setPhase(0);
-        pumpAlarm(OFF);
-        testAlarm();
+    return; // simula il continue
+    if (pressedButton == PRESS_CONTROL_BUTTON) {
+
     }
-
-
 
     // --- controllo pompa
     if (digitalRead(pumpState_pin) == ON) { // logica inversa. PumpON->LowLevel

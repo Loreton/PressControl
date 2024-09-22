@@ -14,7 +14,6 @@ void testAlarm() {
     buzzerPumpOn();
     delay(2000);
     buzzerPumpOff();
-    return;
     delay(2000);
 
     lnprintf("%sturning Horn ON\n", BLANK_2);
