@@ -57,7 +57,7 @@
     // #define xxx2                        D08  // not used
 
     #define HORN_pin                    D04  // OUTPUT
-    #define arduino_PControl_pin        D05  // OUTPUT
+    #define relay_PControl_pin          D05  // OUTPUT
     #define passiveBuzzer_pin           D06  // OUTPUT
     #define activeBuzzer_pin            D07  // OUTPUT
     #define pumpState_pin               D08  // INPUT PULLUP
@@ -67,6 +67,55 @@
     // #define TestAlarm_pin               D12  // INPUT PULLUP
 
     #define LED_pin                     D13  // OUTPUT quello incorporato
+
+
+    enum enum_levels {
+                    PC_ON = 0,
+                    PC_OFF = 1,
+                    OFF = LOW,
+                    ON  = HIGH,
+                    BUZZ_ON  = HIGH,
+                    BUZZ_OFF = LOW,
+                };
+
+
+    #define SHORT_PRESS 1
+    #define LONG_PRESS  2
+
+    typedef struct  {
+        const char   *name;
+        uint8_t pin                          = 0;
+        uint8_t mode                         = INPUT_PULLUP;
+        bool    lastState                    = HIGH;
+        bool    long_notify                  = true;         // flag to avoid ripetitive buzzer notification
+        bool    short_notify                 = true;         // flag to avoid ripetitive buzzer notification
+        bool    press_level                  = LOW;          // set level for pressed
+        uint8_t press_time                   = 0;         // SHORT_PRESS, LONG_PRESS
+        unsigned long pressedMillis          = 0ul;
+        const unsigned long shortButtonPress = 400ul;
+        const unsigned long longButtonPress  = 3000ul;
+    } bounced_pin_t;
+
+    typedef struct  {
+        const char   *name;
+        uint8_t pin                          = 0;
+        uint8_t mode                         = OUTPUT;
+        bool    state                        = HIGH;
+        bool    lastState                    = HIGH;
+        bool    ON                           = LOW;
+        bool    OFF                          = HIGH;
+    } out_pin_t;
+
+
+    typedef struct  {
+        const char   *name;
+        uint8_t pin                          = 0;
+        uint8_t mode                         = OUTPUT;
+        bool    state                        = HIGH;
+        bool    lastState                    = HIGH;
+        bool    press_level                  = LOW;
+        bool    OFF                          = HIGH;
+    } input_pin_t;
 
 
 

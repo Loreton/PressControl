@@ -11,22 +11,19 @@
 
 
 void testAlarm() {
-    buzzerPumpOn();
+    pumpOnNotification();
     delay(2000);
-    buzzerPumpOff();
-    delay(2000);
-
-    lnprintf("%sturning Horn ON\n", BLANK_2);
-    togglePinWithDelay(HORN_pin, 4000);
+    pumpOffNotification();
     delay(2000);
 
-    lnprintf("%sturning PressControl ON\n", BLANK_2);
-    togglePinWithDelay(sonoff_emergency_pin, 500); // switch press control state
+    togglePinWithDelay(horn, 4000);
     delay(2000);
 
-    lnprintf("%sturning PressControl OFF\n", BLANK_2);
-    togglePinWithDelay(sonoff_emergency_pin, 500); // switch press control state
+    togglePinWithDelay(emergency, 500); // switch press control state
     delay(2000);
+    togglePinWithDelay(relay, 500); // switch press control state
+    delay(2000);
+
     lnprintf("TEST_ALARM_PIN completed\n");
 }
 

@@ -11,17 +11,17 @@
 
 
 
-bounce_button_t actionButton;
+// bounced_pin_t actionButton;
 
 void displayPinState() {
-    lnprintf("HORN_pin:              %d\n" , digitalRead(HORN_pin));
-    lnprintf("arduino_PControl_pin:  %d\n" , digitalRead(arduino_PControl_pin));
-    lnprintf("passiveBuzzer_pin:     %d\n" , digitalRead(passiveBuzzer_pin));
-    lnprintf("activeBuzzer_pin:      %d\n" , digitalRead(activeBuzzer_pin));
-    lnprintf("pumpState_pin:         %d\n" , digitalRead(pumpState_pin));
-    lnprintf("pressControlState_pin: %d\n" , digitalRead(pressControlState_pin));
-    lnprintf("sonoff_emergency_pin:  %d\n" , digitalRead(sonoff_emergency_pin));
-    lnprintf("start_PControl_pin:    %d\n" , digitalRead(start_PControl_pin));
+    // lnprintf("HORN_pin:              %d\n" , digitalRead(HORN_pin));
+    lnprintf("relay_PControl_pin:    %d\n" , !digitalRead(relay_PControl_pin));
+    // lnprintf("passiveBuzzer_pin:     %d\n" , digitalRead(passiveBuzzer_pin));
+    // lnprintf("activeBuzzer_pin:      %d\n" , digitalRead(activeBuzzer_pin));
+    lnprintf("pumpState_pin:         %d\n" , !digitalRead(pumpState_pin));
+    lnprintf("pressControlState_pin: %d\n" , !digitalRead(pressControlState_pin));
+    // lnprintf("sonoff_emergency_pin:  %d\n" , digitalRead(sonoff_emergency_pin));
+    // lnprintf("start_PControl_pin:    %d\n" , digitalRead(start_PControl_pin));
 }
 
 
@@ -32,15 +32,15 @@ void setup() {
     Serial.begin(115200);
     delay(1000);
 
-    actionButton.name = "pressControlButton";
-    actionButton.pin = start_PControl_pin;
+    // actionButton.name = "pressControlButton";
+    // actionButton.pin = start_PControl_pin;
     // actionButton.mode = INPUT_PULLUP;
 
     // bounce_button TestAlarm;
     // emergency.name = "TestAlarm";
     // emergency.pin = TestAlarm_pin;
     // emergency.mode = INPUT_PULLUP;
-    pinMode(actionButton.pin, actionButton.mode);
+    // pinMode(actionButton.pin, actionButton.mode);
 
 
     /* ------ setup PINs
@@ -48,18 +48,31 @@ void setup() {
         per evitare problemi con risorse esterne al momento dell'accensione
         conviene forzare l'output a livello desiderato prima di impostarlo come output
     */
-    pinMode(pumpState_pin,         INPUT_PULLUP);
+    // pinMode(pumpState_pin,         INPUT_PULLUP);
+    // pinMode(pressControlState_pin, INPUT_PULLUP);
+
     // pinMode(TestAlarm_pin,         INPUT_PULLUP);
-    pinMode(pressControlState_pin, INPUT_PULLUP);
+    configInputPin(pressControlState, pressControlState_pin,  INPUT_PULLUP,   LOW, "PressControl relay State");
+    configInputPin(pumpState,         pumpState_pin,          INPUT_PULLUP,   LOW, "Pump relay State");
 
 
+    //        out_pin,      pin_nr,                on_level, *name);
+    configOutPin(emergency,        sonoff_emergency_pin,   LOW,   "PressControl button");
+    configOutPin(relay,            relay_PControl_pin,     HIGH,    "Alternative PressControl Relay");
+    configOutPin(led,              LED_pin,                LOW,   "Led");
+    configOutPin(passiveBuzzer,    passiveBuzzer_pin,      HIGH,   "passiveBuzzer");
+    configOutPin(activeBuzzer,     activeBuzzer_pin,       HIGH,   "activeBuzzer");
+    configOutPin(horn,             HORN_pin,               LOW,   "Horn");
 
-    digitalWrite(sonoff_emergency_pin, OFF); pinMode(sonoff_emergency_pin, OUTPUT);
-    digitalWrite(LED_pin,              OFF); pinMode(LED_pin                , OUTPUT);
-    // digitalWrite(passiveBuzzer_pin, BUZZ_OFF);
-    noTone(passiveBuzzer_pin);                 pinMode(passiveBuzzer_pin     , OUTPUT);
-    digitalWrite(activeBuzzer_pin,  BUZZ_OFF); pinMode(activeBuzzer_pin      , OUTPUT);
-    digitalWrite(HORN_pin,           OFF); pinMode(HORN_pin               , OUTPUT);
+    configBouncedPin(start_PControl,    start_PControl_pin,  INPUT_PULLUP,   LOW,   "start_PControl button");
+
+
+    // digitalWrite(sonoff_emergency_pin, OFF); pinMode(sonoff_emergency_pin, OUTPUT);
+    // digitalWrite(LED_pin,              OFF); pinMode(LED_pin                , OUTPUT);
+    // // digitalWrite(passiveBuzzer_pin, BUZZ_OFF);
+    // noTone(passiveBuzzer_pin);                 pinMode(passiveBuzzer_pin     , OUTPUT);
+    // digitalWrite(activeBuzzer_pin,  BUZZ_OFF); pinMode(activeBuzzer_pin      , OUTPUT);
+    // digitalWrite(HORN_pin,           OFF); pinMode(HORN_pin               , OUTPUT);
 
     // displayValues();
     lnprintf("Starting...\n");
@@ -82,44 +95,64 @@ void setup() {
 #define PRESS_CONTROL_BUTTON 1
 #define TEST_BUTTON          2
 
+uint8_t curr_PressControlState=0;
 void loop() {
     static unsigned long last_second=0;
+    // static uint8_t last_PressControlState;
     static unsigned long elapsed;
     unsigned long seconds;
     now = millis();
+    // curr_PressControlState = digitalRead(pressControlState_pin);
+    readPin(pressControlState);
 
-    uint8_t pressedButton = readShortLongPress(&actionButton, activeBuzzer_pin);
+
+    uint8_t pressedButton = readShortLongPress(start_PControl, activeBuzzer_pin);
 
     /*
         long press -> test action
         esegue i test per verificare che tutte le funzionalitù siano attive
     */
-    if (pressedButton == TEST_BUTTON) {
+    if (pressedButton == LONG_PRESS) {
         displayPinState();
         lnprintf("TEST button has been detected\n");
         // ----  reset  all
-        if ( digitalRead(pressControlState_pin == ON) ) {
+        if (digitalRead(pressControlState_pin == ON) ) {
             // digitalWrite(sonoff_emergency_pin, ON);
-            togglePinWithDelay(sonoff_emergency_pin, 500); // switch press control state
+            // togglePinWithDelay(sonoff_emergency_pin, 500, "Emergency"); // switch press control state
+            // togglePinWithDelay(emergency, 2000); // switch press control state
+            writePin(emergency, OFF); // switch press control state
         }
 
         // digitalWrite(pressControlState_pin, OFF);
-        // displayPinState();
+        displayPinState();
         // delay(5000);
-        // buzzerPumpOff();
-        // buzzerOff();
+        // pumpOffNotification();
+        // soundOff();
         // setPhase(0);
         // pumpAlarm(OFF);
-        // lnprintf("\n");
+        lnprintf("\n");
 
         // start test
         // testAlarm();
     }
 
-    return; // simula il continue
-    if (pressedButton == PRESS_CONTROL_BUTTON) {
+    if (pressedButton == SHORT_PRESS) {
+        // displayPinState();
+        // delay(1000);
+        // if (curr_PressControlState == ON) ) {
+        //     writePin(emergency, OFF); // switch press control state
+        // } else {
+        //     writePin(emergency, ON); // switch press control state
+        // }
+        // displayPinState();
 
     }
+    // lnprintf("last_PressControlState %d  - curr_PressControlState %d\n", last_PressControlState, curr_PressControlState);
+    // if (curr_PressControlState != last_PressControlState) {
+    //     lnprintf("Press Control  State has changed form %d to %d\n", last_PressControlState, curr_PressControlState);
+    //     last_PressControlState = curr_PressControlState;
+    // }
+    return; // simula il continue
 
     // --- controllo pompa
     if (digitalRead(pumpState_pin) == ON) { // logica inversa. PumpON->LowLevel
@@ -128,7 +161,7 @@ void loop() {
         fPUMP = true;
         if (phase_nr==0) {
             lnprintf("Pump status: ON\n");
-            buzzerPumpOn();
+            pumpOnNotification();
             setPhase(1);
         }
 
@@ -143,9 +176,9 @@ void loop() {
         fPUMP = false;
         if (phase_nr>0) {
             lnprintf("Pump status: OFF\n");
-            buzzerOff();
+            soundOff();
             setPhase(0);
-            buzzerPumpOff();
+            pumpOffNotification();
             pumpAlarm(OFF);
         }
     }

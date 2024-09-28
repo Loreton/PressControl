@@ -13,8 +13,8 @@
 // - Comanda il pulsante del sOnOff il quale si attiva sul rilascio.
 // - Il comando è intermediato da un relay.
 // ==================================
-void togglePinWithDelay(uint8_t pin, uint16_t delaymS) {
-    lnprintf("%stoggling pin: %d:\n", BLANK_4, pin);
+void togglePinWithDelay(uint8_t pin, uint16_t delaymS, const char *name) {
+    lnprintf("%stoggling pin: %s [%d]:\n", BLANK_4, pin, name);
     lnprintf("%sturning ON\n", BLANK_6);
     digitalWrite(pin, ON);
     delay(delaymS);
@@ -23,33 +23,85 @@ void togglePinWithDelay(uint8_t pin, uint16_t delaymS) {
 }
 
 
-
-
 // #########################################
 // #
 // #########################################
-bool bounce2(unsigned long last_touch, uint16_t touchDelay) {
-    bool fdetected = false;
-    if (millis() - last_touch > touchDelay) { // bounce
-        fdetected = true;
-    }
-    return fdetected;
+void togglePinWithDelay(out_pin_t *p, uint16_t delaymS) {
+    lnprintf("%stoggling pin: %s [%d]:\n", BLANK_2, p->name, p->pin);
+    lnprintf("%sturning ON\n", BLANK_4);
+    digitalWrite(p->pin, p->ON);
+    delay(delaymS);
+    lnprintf("%sturning OFF\n", BLANK_4);
+    digitalWrite(p->pin, p->OFF);
 }
 
 // #########################################
 // #
 // #########################################
-// bool bounce(uint8_t pin, unsigned long last_touch, uint16_t touchDelay) {
-//     bool fdetected = false;
+void configOutPin(out_pin_t *p, uint8_t nr, bool on_level, const char *name) {
+    p->name = name;
+    p->pin = nr;
+    p->ON = on_level;
+    p->OFF = !on_level;
+    digitalWrite(p->pin, p->OFF);
+    pinMode(p->pin, p->mode);
+}
 
-//     uint8_t state = digitalRead(pin);
-//     if (state == ON) {
-//         if (millis() - last_touch > touchDelay) { // bounce
-//             fdetected = true;
-//         }
-//     }
-//     return fdetected;
-// }
+
+// #########################################
+// #
+// #########################################
+void configInputPin(input_pin_t *p, uint8_t nr, uint8_t mode, bool press_level, const char *name) {
+    p->name = name;
+    p->pin = nr;
+    p->press_level = press_level;
+    // p->OFF = !on_level;
+    p->mode = mode;
+    pinMode(p->pin, p->mode);
+}
+
+// #########################################
+// #
+// #########################################
+void configBouncedPin(bounced_pin_t *p, uint8_t nr, uint8_t mode, bool press_level, const char *name) {
+    p->name = name;
+    p->pin = nr;
+    p->press_level = press_level;
+    p->mode = mode;
+    pinMode(p->pin, p->mode);
+}
+
+// #########################################
+// #
+// #########################################
+void writePin(out_pin_t *p, uint8_t level) {
+    if (level == OFF) {
+        level = p->OFF;
+    } else {
+        level = p->ON;
+    }
+
+    digitalWrite(p->pin, level);
+    p->state = level;
+    lnprintf("setting pin: %s [%d] -> %d:\n", p->name, p->pin, level);
+}
+
+// #########################################
+// #
+// #########################################
+bool readPin(input_pin_t *p) {
+    uint8_t level = digitalRead(p->pin);
+    if (level == p->press_level) {
+        level = LOW;
+    } else {
+        level = HIGH;
+    }
+    p->state = level;
+    lnprintf("pin: %s [%d] has level %d:\n", p->name, p->pin, level);
+    return level;
+}
+
+
 
 // #########################################
 // #
@@ -102,92 +154,6 @@ bool check_pressControlState_pin(uint8_t pin) {
     return fdetected;
 }
 
-#if 0
-
-// milliseconds, will quickly become a bigger number than can be stored in an int.
-unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
-unsigned long debounceDelay = 50;    // the debounce time; increase if the output flickers
-unsigned long lastButtonState;
-
-// #########################################
-// #
-// #########################################
-bool bounce_pin(uint8_t buttonPin) {
-    // read the state of the switch into a local variable:
-    unsigned long now=millis();
-    int reading = digitalRead(buttonPin);
-
-    // If the switch changed, due to noise or pressing:
-    if (reading != lastButtonState) {
-        lastDebounceTime = now; // reset the debouncing timer
-    }
-
-    if ((now - lastDebounceTime) > debounceDelay) {
-        // if the button state has changed:
-        if (reading != buttonState) {
-            buttonState = reading;
-        }
-
-    }
-    return buttonState;
-}
-
-
-void readShortLongPress() {
-    const uint8_t BUTTON_PIN = 2;
-    const unsigned long DEBOUNCE_DELAY = 50ul;
-    const unsigned long LONG_PRESS_LIMIT = 400ul;
-
-    // static variables are used to presere their data between function calls
-    static bool pressed = false;
-    static bool released = false;
-    static unsigned long  pressedMillis = 0ul;
-
-    // pull-up, reversed logic needed
-    static uint8_t buttonState = HIGH;
-    static uint8_t lastButtonState = HIGH;
-    static unsigned long lastDebounceTime = 0ul;
-
-    // gather current state
-    int reading = digitalRead(BUTTON_PIN);
-    unsigned long now = millis();
-
-    if (reading != lastButtonState) {
-        lastDebounceTime = now;
-    }
-
-    if ((now - lastDebounceTime) > DEBOUNCE_DELAY ) {
-        if (reading != buttonState) {
-            buttonState = reading;
-
-            if (buttonState == LOW) {
-                pressed = true;
-                pressedMillis = now;
-            }
-            else {
-                released = true;
-            }
-        }
-    }
-
-    // button was pressed, but not anymore
-    if (pressed && released) {
-        // compare current millis with the timestamp of the last press
-        if ((now - pressedMillis) >= LONG_PRESS_LIMIT ) {
-            longButtonPress = true;
-        }
-        else {
-            shortButtonPress = true;
-        }
-
-        // flip them back
-        pressed = false;
-        released = false;
-    }
-
-    lastButtonState = reading;
-}
-#endif
 
 
 
@@ -200,16 +166,16 @@ void readShortLongPress() {
 // #      2 long press detected:
 // ################################################################
 
-uint8_t readShortLongPress(bounce_button_t *b, uint8_t buzzer_pin) {
+uint8_t readShortLongPress(bounced_pin_t *b, uint8_t buzzer_pin) {
     unsigned long now=millis();
     unsigned long elapsed;
     int state = digitalRead(b->pin);    // If the switch changed, due to noise or pressing:
-    uint8_t retValue=0;
+    uint8_t press_time=0;
 
     // button changing state
     if (state != b->lastState) {
         b->lastState = state;
-        if (state == b->pressed) {
+        if (state == b->press_level) {
             b->pressedMillis = now; // reset pressed millis
             b->long_notify=true;
             b->short_notify=true;
@@ -220,18 +186,20 @@ uint8_t readShortLongPress(bounce_button_t *b, uint8_t buzzer_pin) {
             elapsed = now - b->pressedMillis;
             b->pressedMillis = now; // reset the pressed timer
             if (elapsed > b->longButtonPress) {
-                retValue = 2;
+                press_time = LONG_PRESS;
                 lnprintf("[LONG] - button released [%d] after %lu millis\n", state, elapsed);
             }
             else if (elapsed > b->shortButtonPress) {
-                retValue = 1;
+                press_time = SHORT_PRESS;
                 lnprintf("[SHORT] - button released [%d] after %lu millis\n", state, elapsed);
             }
         }
     }
 
-    // serve solo per segnalare limite short/long
-    if ( (buzzer_pin) && (state == b->pressed) ) {
+    // -------------------------------------------------
+    // serve solo per segnalare  short/long press button
+    // -------------------------------------------------
+    if ( (buzzer_pin) && (state == b->press_level) ) {
         elapsed = now - b->pressedMillis;
         if ( (elapsed > b->longButtonPress) && (b->long_notify) ){
             toggleBuzzer(buzzer_pin, 500);
@@ -243,6 +211,6 @@ uint8_t readShortLongPress(bounce_button_t *b, uint8_t buzzer_pin) {
             b->short_notify=false; // suona solo una volta
         }
     }
-    return retValue;
+    return press_time;
 } // end function
 

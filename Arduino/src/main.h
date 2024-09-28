@@ -9,23 +9,7 @@
 
     #include "pins.h"
 
-// #if defined(ARDUINO) && ARDUINO >= 100
-//   #include "Arduino.h"
-// #else
-//   #include "WConstants.h"
-// #endif
 
-// typedef unsigned int uint;
-// typedef unsigned long ulong;
-
-
-// valid typedef
-// int8_t   int16_t     int32_t
-// uint8_t  uint16_t    uint32_t
-
-
-
-    // #define PHASE_ALARM_THRESHOLD_NUMBER      3 // default:10
 
 
     #define MAX_PHASES              3
@@ -33,44 +17,6 @@
     #define PHASE_ALARM_INTERVAL    PHASE_INTERVAL/5
     #define PHASE_MIN_INTERVAL      1*1000    // minimo intervallo di Buzzer
     #define PHASE_STEP_DOWN         PHASE_INTERVAL/30    // step con cui deve scendere l'intervallo per ogni fase
-
-    enum enum_levels {
-                    ON  = LOW,
-                    OFF = HIGH,
-                    // PUMP_ON  = LOW,
-                    // PUMP_OFF = HIGH,
-                    BUZZ_ON  = HIGH,
-                    BUZZ_OFF = LOW,
-                    // LED_ON   = LOW,
-                    // LED_OFF  = HIGH,
-                    // BUTTON_ON   = LOW,
-                    // BUTTON_OFF  = HIGH,
-                    // INP_ON   = LOW,
-                    // INP_OFF  = HIGH,
-                    // HORN_ON  = LOW,
-                    // HORN_OFF = HIGH
-                };
-
-
-
-
-    typedef struct  {
-        const char   *name;
-        uint8_t pin;
-        uint8_t mode = INPUT_PULLUP;
-        bool longPress = false;         // true if long press detected
-        bool shortPress = false;         // true if short press detected
-        bool long_notify = true;         // flag to avoid ripetitive buzzer notification
-        bool short_notify = true;         // flag to avoid ripetitive buzzer notification
-        uint8_t pressed = LOW;          // set level for pressed
-        uint8_t lastState = HIGH;
-        unsigned long pressedMillis = 0ul;
-        const unsigned long shortButtonPress = 400ul;
-        const unsigned long longButtonPress = 3000ul;
-    } bounce_button_t;
-
-
-
 
 
 
@@ -86,6 +32,15 @@
         unsigned long   now;
         // unsigned long   buzzer_duration, buzzer_frequency, buzzer_volume;
         unsigned long   phase_interval, next_phase_time, phase_start_time;
+
+        out_pin_t emergency_S, relay_S, led_S, passiveBuzzer_S, activeBuzzer_S, horn_S;
+        out_pin_t *emergency = &emergency_S, *relay=&relay_S, *led = &led_S, *passiveBuzzer = &passiveBuzzer_S, *activeBuzzer=&activeBuzzer_S, *horn=&horn_S;
+
+        input_pin_t pumpState_S, pressControlState_S;
+        input_pin_t *pumpState = &pumpState_S, *pressControlState = &pressControlState_S;
+
+        bounced_pin_t start_PControl_S;
+        bounced_pin_t *start_PControl = &start_PControl_S;
 
 
     #else
@@ -104,6 +59,9 @@
         extern uint32_t alarm_time_duration;
         extern uint32_t alarm_start_time;
 
+        extern out_pin_t *emergency, *relay, *led, *passiveBuzzer, *activeBuzzer, *horn;
+        extern input_pin_t *pumpState, *pressControlState;
+        extern bounced_pin_t *start_PControl;
 
     #endif
 
@@ -147,49 +105,6 @@
 
 
 
-
-// ----------- F U N C T I O N S  -------------------
-
-    // void lnprint(const char *msg, const unsigned long value=SKIP_PRINT_VALUE, const char *s2="\n");
-
-    // void displayValues(void);
-    void setPhase(uint8_t phase_nr);
-    // uint getPhase(void);
-    void heckPumpState(int pump_status);
-    void checkLed(void);
-    void checkHorn(void);
-    void PressControl_Toggle(void);
-    void printStatus(void);
-
-    // ---- new
-    void testAlarm(void);
-    void _SerialPrintf(const char *fmt, ...);
-    void testPrint(void);
-    // uint8_t getPhase(uint8_t pump_time);
-    // uint8_t getPhase(uint8_t phase_nr, uint8_t pump_time);
-    void buzzerAlarm(uint8_t pin, uint8_t phase_num);
-
-
-
-    // void buzzerPumpOn(uint8_t pin);
-    // void buzzerPumpOff(uint8_t pin);
-
-    // int initializePhases(void);
-    void togglePinWithDelay(uint8_t pin, uint16_t toogle_delay=100);
-    void checkPumpState();
-    void buzzerOff();
-    void buzzerPumpOn();
-    void buzzerPumpOff();
-    // void checkPassiveBuzzer();
-    // void checkToneBuzzer(bool fStart=false);
-    // void pumpAlarm(bool fStart=false);
-    void pumpAlarm(uint8_t action);
-    void pumpAlarmCheck(void);
-
-    // bool check_pumpState_pin(uint8_t pin, uint16_t touchDelay=300);
-    // bool check_pressControlState_pin(uint8_t pin);
-    // void readShortLongPress(bounce_button_t *butt);
-    uint8_t readShortLongPress(bounce_button_t *b, uint8_t buzzer_pin=0); // buzzer pin per indicare la ricezione del tasto
-    void toggleBuzzer(uint8_t pin, uint16_t delaymS) ;
+    #include "prototypes.h"
 
 #endif
